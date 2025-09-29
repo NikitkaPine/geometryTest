@@ -24,11 +24,40 @@ class WelcomeActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+
+
         imageButton.setOnClickListener {
-            Toast.makeText(this,"Clicked!",Toast.LENGTH_SHORT).show()
+            GalleryHelper.openGallery(this, single = true)
         }
         listButton.setOnClickListener {
             Toast.makeText(this,"Clicked!",Toast.LENGTH_SHORT).show()
         }
+
+
+
     }
+
+
+
+    @Deprecated("Deprecated in Java")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        GalleryHelper.handleResult(
+            requestCode, resultCode, data,
+            onSingle = { uri ->
+                val intent = Intent(this, PhotoCheck::class.java)
+                intent.putExtra("image_uri", uri.toString()) // передаем как строку
+                startActivity(intent)
+            },
+            onMultiple = { uris ->
+                if (uris.isNotEmpty()) {
+                    val intent = Intent(this, PhotoCheck::class.java)
+                    intent.putExtra("image_uri", uris[0].toString()) // пока берём первую
+                    startActivity(intent)
+                }
+            }
+        )
+    }
+
 }
