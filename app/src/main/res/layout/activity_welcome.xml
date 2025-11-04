@@ -7,6 +7,17 @@
     android:layout_height="match_parent"
     tools:context=".WelcomeActivity">
 
+    <ImageButton
+        android:id="@+id/button_history"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="История"
+        android:src="@android:drawable/ic_menu_recent_history"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/button_list"
         android:layout_width="180dp"
@@ -33,7 +44,7 @@
         android:id="@+id/button_camera"
         android:layout_width="180dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="80dp"
         android:text="Make Photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
