@@ -87,6 +87,7 @@ class WelcomeActivity : AppCompatActivity() {
         cameraButton = findViewById(R.id.button_camera)
         imageButton = findViewById(R.id.button_image)
         listButton = findViewById(R.id.button_list)
+        buttonHistory = findViewById(R.id.button_history)
     }
 
     /**
