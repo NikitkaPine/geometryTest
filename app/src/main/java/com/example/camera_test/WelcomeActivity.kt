@@ -98,25 +98,10 @@ class WelcomeActivity : AppCompatActivity() {
         cameraButton.setOnClickListener {
             cameraManager.takePhoto(object : CameraManager.PhotoCaptureCallback {
                 override fun onPhotoSaved(uri: android.net.Uri) {
-                    // СОХРАНЯЕМ ФОТО В ИСТОРИЮ ПРИЛОЖЕНИЯ
-                    val example = "Фото ${System.currentTimeMillis()}" // Пока заглушка
-                    val success = HistoryManager.saveImage(
-                        this@WelcomeActivity,
-                        uri,
-                        example
-                    )
-
-                    if (success) {
-                        Toast.makeText(
-                            this@WelcomeActivity,
-                            "Фото сохранено в историю",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
                     // Открываем PhotoCheck с сделанным фото для обработки
                     val intent = Intent(this@WelcomeActivity, PhotoCheck::class.java)
                     intent.putExtra("image_uri", uri.toString())
+                    intent.putExtra("is_temp",true)// флаг временного фото
                     startActivity(intent)
                 }
 

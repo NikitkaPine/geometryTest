@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="#9E2626"
     tools:context=".WelcomeActivity">
 
 
@@ -36,7 +37,7 @@
         android:layout_width="110dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="64dp"
         android:text="Figure List"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -46,17 +47,18 @@
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="64dp"
         android:text="Open Gallery"
         app:layout_constraintBottom_toBottomOf="@+id/previewView"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/button_camera"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:text="Make Photo"
+        android:layout_width="75dp"
+        android:layout_height="85dp"
+        android:layout_marginBottom="48dp"
+        android:backgroundTint="#FFFBFB"
+        android:text="."
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/button_list"
         app:layout_constraintStart_toEndOf="@+id/button_image" />

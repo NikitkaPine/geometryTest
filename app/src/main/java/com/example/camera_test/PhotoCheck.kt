@@ -152,6 +152,9 @@ class PhotoCheck : AppCompatActivity() {
                                 val success = HistoryManager.saveImage(this@PhotoCheck, savedUri, example)
                                 if (success) {
                                     Toast.makeText(this@PhotoCheck, "Выделенная часть сохранена", Toast.LENGTH_SHORT).show()
+                                    if (intent.getBooleanExtra("is_temp", false)) {
+                                        imageUri?.let { contentResolver.delete(it, null, null) }
+                                    }
                                 } else {
                                     // fallback: если запись в историю провалилась — пробуем сохранить оригинал как раньше
                                     val fallback = HistoryManager.saveImage(this@PhotoCheck, imageUri!!, example)
