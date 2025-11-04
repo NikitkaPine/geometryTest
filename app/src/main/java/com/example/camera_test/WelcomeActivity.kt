@@ -3,6 +3,7 @@ package com.example.camera_test
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ class WelcomeActivity : AppCompatActivity() {
         val cameraButton: Button = findViewById(R.id.button_camera)
         val imageButton: Button = findViewById(R.id.button_image)
         val listButton: Button = findViewById(R.id.button_list)
+        val buttonHistory: ImageButton = findViewById(R.id.button_history)
 
         cameraButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
@@ -34,6 +36,10 @@ class WelcomeActivity : AppCompatActivity() {
         }
 
 
+        buttonHistory.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 

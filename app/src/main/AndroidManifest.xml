@@ -37,6 +37,10 @@
             android:name=".MainActivity"
             android:exported="true"></activity>
 
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.camera_test.fileprovider"
