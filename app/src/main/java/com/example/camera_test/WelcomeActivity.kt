@@ -30,6 +30,8 @@ class WelcomeActivity : AppCompatActivity() {
     private lateinit var cameraButton: Button
     private lateinit var imageButton: Button
     private lateinit var listButton: Button
+
+    private lateinit var buttonHistory: ImageButton
     private lateinit var previewView: PreviewView
 
     // Менеджеры
@@ -135,6 +137,11 @@ class WelcomeActivity : AppCompatActivity() {
         // Кнопка "Figure List"
         listButton.setOnClickListener {
             Toast.makeText(this, "Clicked!", Toast.LENGTH_SHORT).show()
+        }
+
+        buttonHistory.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
         }
     }
 
