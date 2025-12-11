@@ -8,6 +8,16 @@
     tools:context=".PhotoCheck">
 
     <!-- Фото -->
+    <EditText
+        android:id="@+id/resultText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:text="RESULT"
+        android:textColor="#FFFDFD"
+        android:textSize="24sp" />
+
     <ImageView
         android:id="@+id/fullscreen_image"
         android:layout_width="match_parent"

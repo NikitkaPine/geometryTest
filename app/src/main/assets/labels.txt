@@ -1,0 +1,8 @@
+circle
+equilateral_triangle
+isosceles_triangle
+rectangle
+rhombus
+right_triangle
+square
+triangle
