@@ -5,31 +5,33 @@
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <!-- Полотно для рисования фигур -->
+    <!-- Полотно для рисования фигур (НИЖНИЙ СЛОЙ) -->
     <com.example.camera_test.ShapeCanvasView
         android:id="@+id/shape_canvas"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="#FFFFFF"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/shape_spinner"
+        app:layout_constraintBottom_toTopOf="@+id/results_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="8dp" />
 
-    <!-- Контейнер для полей ввода СЛЕВА (стороны) -->
+    <!-- Контейнер для полей ввода СЛЕВА ВВЕРХУ (стороны) -->
     <LinearLayout
         android:id="@+id/input_container_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="12dp"
-        android:background="#80FFFFFF"
+        android:background="#BBDEFB"
+        android:elevation="4dp"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="@id/shape_canvas"
-        app:layout_constraintTop_toTopOf="@id/shape_canvas"
-        android:layout_margin="16dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="8dp">
 
-        <!-- Поле для радиуса (круг) -->
+        <!-- Поле для радиуса -->
         <LinearLayout
             android:id="@+id/field_radius"
             android:layout_width="wrap_content"
@@ -41,20 +43,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="r = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_radius"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
-        <!-- Поле для диаметра (круг) -->
         <LinearLayout
             android:id="@+id/field_diameter"
             android:layout_width="wrap_content"
@@ -67,20 +71,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="d = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_diameter"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
-        <!-- Поле для стороны квадрата -->
         <LinearLayout
             android:id="@+id/field_square_side"
             android:layout_width="wrap_content"
@@ -92,20 +98,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="a = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_square_side"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
-        <!-- Поля для прямоугольника -->
         <LinearLayout
             android:id="@+id/field_rect_width"
             android:layout_width="wrap_content"
@@ -117,17 +125,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="a = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_rect_width"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -142,20 +153,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="b = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_rect_height"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
-        <!-- Поля для равнобедренного треугольника -->
         <LinearLayout
             android:id="@+id/field_iso_side"
             android:layout_width="wrap_content"
@@ -167,17 +180,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="a = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_iso_side"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -192,20 +208,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="b = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_iso_base"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
-        <!-- Поля для прямоугольного треугольника -->
         <LinearLayout
             android:id="@+id/field_right_a"
             android:layout_width="wrap_content"
@@ -217,17 +235,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="a = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_right_a"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -242,17 +263,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="b = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_right_b"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -267,35 +291,38 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="c = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_right_c"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Контейнер для углов СПРАВА (только для треугольников) -->
+    <!-- Контейнер для углов СПРАВА ВВЕРХУ -->
     <LinearLayout
         android:id="@+id/input_container_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="12dp"
-        android:background="#80FFFFFF"
+        android:background="#FFCCBC"
+        android:elevation="4dp"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@id/shape_canvas"
-        app:layout_constraintTop_toTopOf="@id/shape_canvas"
-        android:layout_margin="16dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="8dp">
 
-        <!-- Углы для равнобедренного треугольника -->
         <LinearLayout
             android:id="@+id/field_iso_angle_a"
             android:layout_width="wrap_content"
@@ -307,17 +334,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="∠A = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_iso_angle_a"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -332,17 +362,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="∠B = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_iso_angle_b"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -357,20 +390,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="∠C = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_iso_angle_c"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
-        <!-- Углы для прямоугольного треугольника -->
         <LinearLayout
             android:id="@+id/field_right_angle_a"
             android:layout_width="wrap_content"
@@ -382,17 +417,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="∠A = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_right_angle_a"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
         <LinearLayout
@@ -407,17 +445,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="∠B = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_right_angle_b"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
-                android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:hint="90°"
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF"
+                android:enabled="false"
+                android:text="90" />
         </LinearLayout>
 
         <LinearLayout
@@ -432,44 +475,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="∠C = "
-                android:textSize="14sp"
-                android:textColor="#000000" />
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/input_right_angle_c"
-                android:layout_width="70dp"
-                android:layout_height="36dp"
+                android:layout_width="100dp"
+                android:layout_height="45dp"
                 android:inputType="numberDecimal"
                 android:hint="0"
-                android:textSize="13sp"
-                android:padding="6dp"
-                android:background="#CCFFFFFF" />
+                android:textSize="16sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:padding="8dp"
+                android:background="#FFFFFF" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Кнопка Solve -->
-    <Button
-        android:id="@+id/button_solve"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:text="Solve"
-        android:textSize="16sp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/results_container"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Контейнер для результатов -->
+    <!-- Контейнер для результатов (СНИЗУ) -->
     <LinearLayout
         android:id="@+id/results_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="12dp"
-        android:background="#E3F2FD"
+        android:background="#C8E6C9"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/shape_spinner"
         app:layout_constraintStart_toStartOf="parent"
@@ -479,39 +510,72 @@
         android:layout_marginBottom="8dp">
 
         <TextView
-            android:id="@+id/result_perimeter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="P = "
-            android:textSize="16sp"
+            android:text="Результаты:"
+            android:textSize="18sp"
             android:textColor="#000000"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:layout_marginBottom="8dp" />
 
-        <TextView
-            android:id="@+id/result_area"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="S = "
-            android:textSize="16sp"
-            android:textColor="#000000"
-            android:textStyle="bold"
-            android:layout_marginTop="4dp"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="P = "
+                android:textSize="20sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+            <EditText
+                android:id="@+id/input_perimeter"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="50dp"
+                android:inputType="numberDecimal"
+                android:hint="0"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:textStyle="bold"
+                android:padding="10dp"
+                android:background="#FFFFFF" />
+        </LinearLayout>
 
-        <TextView
-            android:id="@+id/result_sides"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="14sp"
-            android:textColor="#555555"
-            android:layout_marginTop="4dp"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S = "
+                android:textSize="20sp"
+                android:textColor="#000000"
+                android:textStyle="bold" />
+            <EditText
+                android:id="@+id/input_area"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="50dp"
+                android:inputType="numberDecimal"
+                android:hint="0"
+                android:textSize="18sp"
+                android:textColor="#000000"
+                android:textColorHint="#999999"
+                android:textStyle="bold"
+                android:padding="10dp"
+                android:background="#FFFFFF" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Выпадающий список для выбора фигуры -->
+    <!-- Выпадающий список -->
     <Spinner
         android:id="@+id/shape_spinner"
         android:layout_width="0dp"
