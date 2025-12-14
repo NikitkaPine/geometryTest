@@ -51,9 +51,9 @@ class WelcomeActivity : AppCompatActivity() {
             }
             !shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)
                     && permissionDeniedCount >= MAX_PERMISSION_DENIALS ->{
-                        Log.w(TAG, "Пользователь выбрал 'Больше не спрашивать'")
-                        showPermissionPermanentlyDeniedDialog()
-                    }
+                Log.w(TAG, "Пользователь выбрал 'Больше не спрашивать'")
+                showPermissionPermanentlyDeniedDialog()
+            }
             else -> {
                 permissionDeniedCount++
                 Log.w(TAG, "Отказ в разрешении, попытка #$permissionDeniedCount")
@@ -72,30 +72,36 @@ class WelcomeActivity : AppCompatActivity() {
         val imageButton: Button = findViewById(R.id.button_image)
         val listButton: Button = findViewById(R.id.button_list)
         val buttonHistory: ImageButton = findViewById(R.id.button_history)
+        val buttonCalculator: ImageButton = findViewById(R.id.button_calculator)
 
         cameraButton.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
 
-
-
         imageButton.setOnClickListener {
             GalleryHelper.openGallery(this, single = true)
         }
+
         listButton.setOnClickListener {
             Toast.makeText(this,"Clicked!",Toast.LENGTH_SHORT).show()
         }
-
-        previewView = findViewById(R.id.previewView)
-        cameraExecutor = Executors.newSingleThreadExecutor()
 
         buttonHistory.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
             startActivity(intent)
         }
-        checkAndRequestCameraPermission()
 
+        // Новый обработчик для кнопки калькулятора
+        buttonCalculator.setOnClickListener {
+            val intent = Intent(this, ShapeCalculatorActivity::class.java)
+            startActivity(intent)
+        }
+
+        previewView = findViewById(R.id.previewView)
+        cameraExecutor = Executors.newSingleThreadExecutor()
+
+        checkAndRequestCameraPermission()
     }
 
 
@@ -108,13 +114,13 @@ class WelcomeActivity : AppCompatActivity() {
             requestCode, resultCode, data,
             onSingle = { uri ->
                 val intent = Intent(this, PhotoCheck::class.java)
-                intent.putExtra("image_uri", uri.toString()) // передаем как строку
+                intent.putExtra("image_uri", uri.toString())
                 startActivity(intent)
             },
             onMultiple = { uris ->
                 if (uris.isNotEmpty()) {
                     val intent = Intent(this, PhotoCheck::class.java)
-                    intent.putExtra("image_uri", uris[0].toString()) // пока берём первую
+                    intent.putExtra("image_uri", uris[0].toString())
                     startActivity(intent)
                 }
             }
@@ -159,7 +165,7 @@ class WelcomeActivity : AppCompatActivity() {
         if(isPermissionRequested){
             return
         }
-         isPermissionRequested = true
+        isPermissionRequested = true
         try{
             requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }catch(e:Exception){
@@ -250,7 +256,6 @@ class WelcomeActivity : AppCompatActivity() {
                 Log.d(TAG, "Preview камеры запущен успешно")
             } catch (e: Exception) {
                 Log.e(TAG, "Ошибка при запуске preview камеры", e)
-                // Не показываем Toast - пользователь может не заметить/не заботиться
             }
         }, ContextCompat.getMainExecutor(this))
     }
@@ -267,18 +272,13 @@ class WelcomeActivity : AppCompatActivity() {
             .build()
 
         try {
-            // Отвязываем все предыдущие use cases
             cameraProvider.unbindAll()
-
-            // Привязываем камеру к lifecycle
             cameraProvider.bindToLifecycle(
                 this as LifecycleOwner,
                 cameraSelector,
                 preview
             )
-
             Log.d(TAG, "Preview успешно привязан")
-
         } catch (e: Exception) {
             Log.e(TAG, "Ошибка при привязке preview", e)
             isCameraStarted = false
@@ -287,8 +287,6 @@ class WelcomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        // Если разрешение появилось (например, выдано в настройках)
         if (hasCameraPermission() && !isCameraStarted) {
             Log.d(TAG, "Разрешение получено во время паузы, запускаем preview")
             startCameraPreview()

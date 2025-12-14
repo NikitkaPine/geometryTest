@@ -41,6 +41,11 @@
             android:name=".HistoryActivity"
             android:exported="false" />
 
+        <!-- НОВЫЙ ACTIVITY ДЛЯ КАЛЬКУЛЯТОРА ФИГУР -->
+        <activity
+            android:name=".ShapeCalculatorActivity"
+            android:exported="false" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.example.camera_test.fileprovider"
