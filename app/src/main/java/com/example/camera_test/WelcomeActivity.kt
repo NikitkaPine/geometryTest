@@ -34,6 +34,8 @@ class WelcomeActivity : AppCompatActivity() {
     private lateinit var buttonHistory: ImageButton
     private lateinit var previewView: PreviewView
 
+    private lateinit var buttonCalculator: ImageButton
+
     // Менеджеры
     private lateinit var cameraManager: CameraManager
     private lateinit var permissionManager: PermissionManager
@@ -88,6 +90,7 @@ class WelcomeActivity : AppCompatActivity() {
         imageButton = findViewById(R.id.button_image)
         listButton = findViewById(R.id.button_list)
         buttonHistory = findViewById(R.id.button_history)
+        buttonCalculator = findViewById(R.id.button_calculator)
     }
 
     /**
@@ -127,6 +130,11 @@ class WelcomeActivity : AppCompatActivity() {
 
         buttonHistory.setOnClickListener {
             val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+        }
+
+        buttonCalculator.setOnClickListener {
+            val intent = Intent(this, ShapeCalculatorActivity::class.java)
             startActivity(intent)
         }
     }

@@ -22,6 +22,7 @@ class PhotoCheck : AppCompatActivity() {
     private var imageUri: Uri? = null
     private var isTemp: Boolean = false
     private var currentBitmap: Bitmap? = null
+    private var currentResult: ShapeClassifier.ClassificationResult? = null
 
     // Классификатор фигур
     private lateinit var shapeClassifier: ShapeClassifier
@@ -65,10 +66,10 @@ class PhotoCheck : AppCompatActivity() {
     }
 
     private fun initViews() {
-        val imageView: ImageView = findViewById(R.id.fullscreen_image)
-        val selectionView: SelectionView = findViewById(R.id.selection_view)
-        val buttonCancel: Button = findViewById(R.id.button_cancel)
-        val buttonOk: Button = findViewById(R.id.button_ok)
+        imageView = findViewById(R.id.fullscreen_image)
+        resultTextView = findViewById(R.id.resultText)
+        buttonAccept = findViewById(R.id.button_ok)
+        buttonRetake = findViewById(R.id.button_cancel)
     }
 
     /**
@@ -96,6 +97,7 @@ class PhotoCheck : AppCompatActivity() {
         currentBitmap?.let { bitmap ->
             // Показываем процесс
             resultTextView.text = "🔍 Анализирую изображение..."
+            Toast.makeText(this, "🔍 Анализирую изображение...", Toast.LENGTH_SHORT).show()
 
             // Запускаем классификацию в фоновом потоке
             Thread {
@@ -104,12 +106,54 @@ class PhotoCheck : AppCompatActivity() {
                 // Обновляем UI в главном потоке
                 runOnUiThread {
                     if (result != null) {
+                        currentResult = result
                         displayResult(result)
+
+                        // Toast с результатом в зависимости от уверенности
+                        when {
+                            result.confidence > 0.7f -> {
+                                // Высокая уверенность
+                                Toast.makeText(
+                                    this,
+                                    "✅ Распознано: ${result.classNameRu}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            result.confidence > 0.4f -> {
+                                // Средняя уверенность
+                                Toast.makeText(
+                                    this,
+                                    "⚠️ Возможно: ${result.classNameRu} (${(result.confidence * 100).toInt()}%)",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                            else -> {
+                                // Низкая уверенность
+                                Toast.makeText(
+                                    this,
+                                    "❓ Не уверен, но похоже на: ${result.classNameRu} (${(result.confidence * 100).toInt()}%)",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
                     } else {
+                        // Ошибка классификации
                         resultTextView.text = "❌ Ошибка распознавания"
+                        Toast.makeText(
+                            this,
+                            "❌ Модель не работает: не удалось распознать фигуру",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }.start()
+        } ?: run {
+            // Bitmap не загружен
+            Toast.makeText(
+                this,
+                "❌ Модель не работает: изображение не загружено",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -118,7 +162,19 @@ class PhotoCheck : AppCompatActivity() {
      */
     private fun displayResult(result: ShapeClassifier.ClassificationResult) {
         val resultText = buildString {
-            append("✅ Распознано: ${result.classNameRu}\n")
+            // Заголовок в зависимости от уверенности
+            when {
+                result.confidence > 0.7f -> {
+                    append("✅ Распознано: ${result.classNameRu}\n")
+                }
+                result.confidence > 0.4f -> {
+                    append("⚠️ Вероятно: ${result.classNameRu}\n")
+                }
+                else -> {
+                    append("❓ Приближенный результат: ${result.classNameRu}\n")
+                }
+            }
+
             append("🎯 Уверенность: ${(result.confidence * 100).toInt()}%\n\n")
 
             append("📊 Все результаты:\n")
@@ -160,10 +216,40 @@ class PhotoCheck : AppCompatActivity() {
     private fun setupButtons() {
         // Кнопка "Принять"
         buttonAccept.setOnClickListener {
-            Toast.makeText(this, "Фото принято!", Toast.LENGTH_SHORT).show()
+            // Сохраняем в историю
+            val result = currentResult
+            if (result != null && imageUri != null) {
+                val saved = HistoryManager.saveImage(
+                    this,
+                    imageUri!!,
+                    result.classNameRu
+                )
 
-            // Здесь можно добавить сохранение в историю
-            // HistoryManager.saveToHistory(imageUri, result)
+                if (saved) {
+                    Toast.makeText(
+                        this,
+                        "✅ Сохранено в историю: ${result.classNameRu}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this,
+                        "⚠️ Ошибка сохранения в историю",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                Toast.makeText(
+                    this,
+                    "⚠️ Нечего сохранять",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            // Удаляем временное фото если оно было
+            if (isTemp) {
+                deleteTemporaryPhoto()
+            }
 
             finish()
         }

@@ -5,4 +5,3 @@ rectangle
 rhombus
 right_triangle
 square
-triangle

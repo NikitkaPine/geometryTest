@@ -16,7 +16,8 @@
         android:inputType="text"
         android:text="RESULT"
         android:textColor="#FFFDFD"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/fullscreen_image"

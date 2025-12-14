@@ -23,7 +23,7 @@ class ShapeClassifier(context: Context) {
 
     companion object {
         private const val TAG = "ShapeClassifier"
-        private const val MODEL_PATH = "shape_classifier.tflite"
+        private const val MODEL_PATH = "shape_classifier_android.tflite"
         private const val LABEL_PATH = "labels.txt"
     }
 
