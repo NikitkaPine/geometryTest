@@ -22,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Camera_test">
         <activity
+            android:name=".FigureListActivity"
+            android:exported="false" />
+        <activity
             android:name=".PhotoCheck"
             android:exported="false" />
         <activity
@@ -35,10 +38,12 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
-
+            android:exported="true" />
         <activity
             android:name=".HistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ShapeCalculatorActivity"
             android:exported="false" />
 
         <provider
