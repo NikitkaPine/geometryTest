@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +24,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
     private lateinit var inputContainerLeft: LinearLayout
     private lateinit var inputContainerRight: LinearLayout
     private lateinit var resultsContainer: LinearLayout
+    private lateinit var btnReset: ImageButton
 
     private var currentShapeType: ShapeType = ShapeType.NONE
     private var isCalculating = false
@@ -75,6 +77,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
             initViews()
             setupSpinner()
             setupAutoCalculation()
+            setupResetButton()
         } catch (e: Exception) {
             e.printStackTrace()
             android.widget.Toast.makeText(this, "Ошибка: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
@@ -87,6 +90,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         inputContainerLeft = findViewById(R.id.input_container_left)
         inputContainerRight = findViewById(R.id.input_container_right)
         resultsContainer = findViewById(R.id.results_container)
+        btnReset = findViewById(R.id.btn_reset)
 
         inputRadius = findViewById(R.id.input_radius)
         inputDiameter = findViewById(R.id.input_diameter)
@@ -170,6 +174,33 @@ class ShapeCalculatorActivity : AppCompatActivity() {
             inputRightA, inputRightB, inputRightC, inputRightAngleA, inputRightAngleC,
             inputPerimeter, inputArea
         ).forEach { it.addTextChangedListener(textWatcher) }
+    }
+
+    private fun setupResetButton() {
+        btnReset.setOnClickListener {
+            resetAllFields()
+        }
+    }
+
+    private fun resetAllFields() {
+        isCalculating = true
+
+        // Очищаем все поля ввода
+        listOf(
+            inputRadius, inputDiameter, inputSquareSide, inputRectWidth, inputRectHeight,
+            inputIsoSide, inputIsoBase, inputIsoAngleA, inputIsoAngleB, inputIsoAngleC,
+            inputRightA, inputRightB, inputRightC, inputRightAngleA, inputRightAngleC,
+            inputPerimeter, inputArea
+        ).forEach { it.setText("") }
+
+        // Восстанавливаем значение 90° для прямого угла
+        if (currentShapeType == ShapeType.RIGHT_TRIANGLE) {
+            inputRightAngleB.setText("90")
+        }
+
+        isCalculating = false
+
+        android.widget.Toast.makeText(this, "Все значения сброшены", android.widget.Toast.LENGTH_SHORT).show()
     }
 
     private fun calculateResults() {
@@ -278,17 +309,10 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         val angleB = inputIsoAngleB.text.toString().toDoubleOrNull()?.let { Math.toRadians(it) }
         val angleC = inputIsoAngleC.text.toString().toDoubleOrNull()?.let { Math.toRadians(it) }
 
-        // В равнобедренном треугольнике:
-        // A - вершина (верхний угол)
-        // B и C - углы при основании (равны между собой)
-
         when {
-            // Известны обе стороны a и b
             a != null && b != null && a > b/2 -> {
                 val h = sqrt(a.pow(2) - (b / 2).pow(2))
-                // Угол при вершине A
                 val angleAtA = 2 * asin(b / (2 * a))
-                // Углы при основании B и C (равны)
                 val angleAtBase = (PI - angleAtA) / 2
 
                 setTextIfDifferent(inputPerimeter, 2 * a + b)
@@ -297,7 +321,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputIsoAngleB, Math.toDegrees(angleAtBase))
                 setTextIfDifferent(inputIsoAngleC, Math.toDegrees(angleAtBase))
             }
-            // Известна боковая сторона a и угол при вершине A
             a != null && angleA != null && angleA > 0 && angleA < PI -> {
                 val base = 2 * a * sin(angleA / 2)
                 val h = a * cos(angleA / 2)
@@ -309,7 +332,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputIsoAngleB, Math.toDegrees(angleAtBase))
                 setTextIfDifferent(inputIsoAngleC, Math.toDegrees(angleAtBase))
             }
-            // Известна боковая сторона a и угол при основании B или C
             a != null && angleB != null && angleB > 0 && angleB < PI/2 -> {
                 val angleAtA = PI - 2 * angleB
                 val base = 2 * a * sin(angleAtA / 2)
@@ -332,7 +354,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputIsoAngleA, Math.toDegrees(angleAtA))
                 setTextIfDifferent(inputIsoAngleB, Math.toDegrees(angleC))
             }
-            // Известно основание b и угол при вершине A
             b != null && angleA != null && angleA > 0 && angleA < PI -> {
                 val side = b / (2 * sin(angleA / 2))
                 val h = side * cos(angleA / 2)
@@ -344,7 +365,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputIsoAngleB, Math.toDegrees(angleAtBase))
                 setTextIfDifferent(inputIsoAngleC, Math.toDegrees(angleAtBase))
             }
-            // Известно основание b и угол при основании B или C
             b != null && angleB != null && angleB > 0 && angleB < PI/2 -> {
                 val angleAtA = PI - 2 * angleB
                 val side = b / (2 * sin(angleAtA / 2))
@@ -377,9 +397,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         val angleA = inputRightAngleA.text.toString().toDoubleOrNull()?.let { Math.toRadians(it) }
         val angleC = inputRightAngleC.text.toString().toDoubleOrNull()?.let { Math.toRadians(it) }
 
-        // В прямоугольном треугольнике угол B всегда 90 градусов
         when {
-            // Известны оба катета
             a != null && b != null -> {
                 val hypotenuse = sqrt(a.pow(2) + b.pow(2))
                 val angA = atan(a / b)
@@ -391,7 +409,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputRightAngleA, Math.toDegrees(angA))
                 setTextIfDifferent(inputRightAngleC, Math.toDegrees(angC))
             }
-            // Известны катет a и гипотенуза c
             a != null && c != null && c > a -> {
                 val cathetB = sqrt(c.pow(2) - a.pow(2))
                 val angA = asin(a / c)
@@ -403,7 +420,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputRightAngleA, Math.toDegrees(angA))
                 setTextIfDifferent(inputRightAngleC, Math.toDegrees(angC))
             }
-            // Известны катет b и гипотенуза c
             b != null && c != null && c > b -> {
                 val cathetA = sqrt(c.pow(2) - b.pow(2))
                 val angA = asin(cathetA / c)
@@ -415,7 +431,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputRightAngleA, Math.toDegrees(angA))
                 setTextIfDifferent(inputRightAngleC, Math.toDegrees(angC))
             }
-            // Известен катет a и угол A
             a != null && angleA != null && angleA > 0 && angleA < PI/2 -> {
                 val cathetB = a / tan(angleA)
                 val hypotenuse = a / sin(angleA)
@@ -427,7 +442,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputArea, (a * cathetB) / 2)
                 setTextIfDifferent(inputRightAngleC, Math.toDegrees(angC))
             }
-            // Известен катет a и угол C
             a != null && angleC != null && angleC > 0 && angleC < PI/2 -> {
                 val cathetB = a * tan(angleC)
                 val hypotenuse = a / cos(angleC)
@@ -439,7 +453,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputArea, (a * cathetB) / 2)
                 setTextIfDifferent(inputRightAngleA, Math.toDegrees(angA))
             }
-            // Известен катет b и угол A
             b != null && angleA != null && angleA > 0 && angleA < PI/2 -> {
                 val cathetA = b * tan(angleA)
                 val hypotenuse = b / cos(angleA)
@@ -451,7 +464,6 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 setTextIfDifferent(inputArea, (cathetA * b) / 2)
                 setTextIfDifferent(inputRightAngleC, Math.toDegrees(angC))
             }
-            // Известен катет b и угол C
             b != null && angleC != null && angleC > 0 && angleC < PI/2 -> {
                 val cathetA = b / tan(angleC)
                 val hypotenuse = b / sin(angleC)
@@ -484,6 +496,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         inputContainerLeft.visibility = View.GONE
         inputContainerRight.visibility = View.GONE
         resultsContainer.visibility = View.GONE
+        btnReset.visibility = View.GONE
 
         listOf(
             fieldRadius, fieldDiameter, fieldSquareSide, fieldRectWidth, fieldRectHeight,
@@ -496,6 +509,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         hideAllFields()
         inputContainerLeft.visibility = View.VISIBLE
         resultsContainer.visibility = View.VISIBLE
+        btnReset.visibility = View.VISIBLE
         fieldRadius.visibility = View.VISIBLE
         fieldDiameter.visibility = View.VISIBLE
     }
@@ -504,6 +518,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         hideAllFields()
         inputContainerLeft.visibility = View.VISIBLE
         resultsContainer.visibility = View.VISIBLE
+        btnReset.visibility = View.VISIBLE
         fieldSquareSide.visibility = View.VISIBLE
     }
 
@@ -511,6 +526,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         hideAllFields()
         inputContainerLeft.visibility = View.VISIBLE
         resultsContainer.visibility = View.VISIBLE
+        btnReset.visibility = View.VISIBLE
         fieldRectWidth.visibility = View.VISIBLE
         fieldRectHeight.visibility = View.VISIBLE
     }
@@ -520,6 +536,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         inputContainerLeft.visibility = View.VISIBLE
         inputContainerRight.visibility = View.VISIBLE
         resultsContainer.visibility = View.VISIBLE
+        btnReset.visibility = View.VISIBLE
 
         fieldIsoSide.visibility = View.VISIBLE
         fieldIsoBase.visibility = View.VISIBLE
@@ -533,6 +550,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         inputContainerLeft.visibility = View.VISIBLE
         inputContainerRight.visibility = View.VISIBLE
         resultsContainer.visibility = View.VISIBLE
+        btnReset.visibility = View.VISIBLE
 
         fieldRightA.visibility = View.VISIBLE
         fieldRightB.visibility = View.VISIBLE

@@ -171,20 +171,27 @@ class ShapeCanvasView @JvmOverloads constructor(
         // Отмечаем равные углы у основания B и C (маленькие дуги)
         val arcRadius = 30f
 
-        // Левый угол B - от горизонтали к боковой стороне
+        // Левый угол B - от основания к боковой стороне
+        val angleBStart = 0f // От горизонтали (основания)
         val angleBToSide = Math.toDegrees(Math.atan2((topY - leftY).toDouble(), (topX - leftX).toDouble())).toFloat()
+        val angleBSweep = angleBToSide - angleBStart
+
         canvas.drawArc(
             leftX - arcRadius, leftY - arcRadius,
             leftX + arcRadius, leftY + arcRadius,
-            180f, angleBToSide - 180f, false, thinLinePaint
+            angleBStart, angleBSweep, false, thinLinePaint
         )
 
-        // Правый угол C - от боковой стороны к горизонтали
+        // Правый угол C - инверсия (рисуем маленькую дугу с другой стороны)
         val angleCToSide = Math.toDegrees(Math.atan2((topY - rightY).toDouble(), (topX - rightX).toDouble())).toFloat()
+        val angleCStart = 180f
+        val angleCEnd = angleCToSide + 360f
+        val angleCSweep = angleCEnd - angleCStart
+
         canvas.drawArc(
             rightX - arcRadius, rightY - arcRadius,
             rightX + arcRadius, rightY + arcRadius,
-            angleCToSide, 180f - angleCToSide, false, thinLinePaint
+            angleCStart, angleCSweep, false, thinLinePaint
         )
 
         // Буквы вершин

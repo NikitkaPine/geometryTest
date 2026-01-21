@@ -17,11 +17,30 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="8dp" />
 
+    <!-- Кнопка сброса (по центру canvas) -->
+    <ImageButton
+        android:id="@+id/btn_reset"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_rotate"
+        android:contentDescription="Сбросить все значения"
+        android:scaleType="fitCenter"
+        android:padding="12dp"
+        android:elevation="4dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="@+id/shape_canvas"
+        app:layout_constraintStart_toStartOf="@+id/shape_canvas"
+        app:layout_constraintEnd_toEndOf="@+id/shape_canvas"
+        android:layout_marginTop="8dp"
+        app:tint="@android:color/black"/>
+
     <!-- Контейнер для полей ввода СЛЕВА ВВЕРХУ (стороны) -->
     <LinearLayout
         android:id="@+id/input_container_left"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="180dp"
         android:orientation="vertical"
         android:padding="12dp"
         android:background="#BBDEFB"
@@ -314,6 +333,7 @@
         android:id="@+id/input_container_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minWidth="180dp"
         android:orientation="vertical"
         android:padding="12dp"
         android:background="#FFCCBC"
