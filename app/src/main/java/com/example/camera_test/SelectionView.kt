@@ -33,13 +33,13 @@ class SelectionView(context: Context, attrs: AttributeSet?) : View(context, attr
     private var rect = RectF(0f, 0f, 0f, 0f)
     private var initialized = false
 
-    // Для перетаскивания
+    // For dragging and dropping
     private enum class Mode { NONE, MOVE, RESIZE_LT, RESIZE_RT, RESIZE_LB, RESIZE_RB }
     private var mode = Mode.NONE
     private var lastX = 0f
     private var lastY = 0f
 
-    // Минимальные размеры
+    // Minimum dimensions
     private val minSize = 80f
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -50,7 +50,7 @@ class SelectionView(context: Context, attrs: AttributeSet?) : View(context, attr
     }
 
     fun initCenteredRect() {
-        // Создаём прямоугольник по центру — 60% ширины и 60% высоты view
+        // Create a rectangle in the center — 60% of the width and 60% of the height of the view
         val w = width.toFloat()
         val h = height.toFloat()
         val rw = w * 0.6f
@@ -65,19 +65,19 @@ class SelectionView(context: Context, attrs: AttributeSet?) : View(context, attr
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        // тёмная заливка
+        // dark fill
         canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), overlayPaint)
 
-        // вырезаем выделенную область (CLEAR)
+        // cut out the selected area (CLEAR)
         val saveCount = canvas.saveLayer(null, null)
         val clearPaint = Paint().apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.CLEAR) }
         canvas.drawRect(rect, clearPaint)
         canvas.restoreToCount(saveCount)
 
-        // рамка
+        // frame
         canvas.drawRect(rect, framePaint)
 
-        // ручки в углах
+        // handles in the corners
         drawHandles(canvas)
     }
 
@@ -106,7 +106,7 @@ class SelectionView(context: Context, attrs: AttributeSet?) : View(context, attr
             MotionEvent.ACTION_DOWN -> {
                 lastX = x
                 lastY = y
-                // сначала ищем ручки
+                // first, we look for handles
                 mode = when {
                     isNear(x, y, rect.left, rect.top) -> Mode.RESIZE_LT
                     isNear(x, y, rect.right, rect.top) -> Mode.RESIZE_RT
@@ -122,7 +122,7 @@ class SelectionView(context: Context, attrs: AttributeSet?) : View(context, attr
                 when (mode) {
                     Mode.MOVE -> {
                         rect.offset(dx, dy)
-                        // не выйти за границы view
+                        // do not go beyond the boundaries of the view
                         val dxFix = when {
                             rect.left < 0 -> -rect.left
                             rect.right > width -> width - rect.right
@@ -173,15 +173,15 @@ class SelectionView(context: Context, attrs: AttributeSet?) : View(context, attr
     }
 
     /**
-     * Возвращает rect выделения в координатах view (selectionView)
+     * Returns the selection rect in view coordinates (selectionView)
      */
     fun getCropRect(): RectF {
-        // возвращаем копию
+        // return a copy
         return RectF(rect)
     }
 
     /**
-     * Установить rect внешне (если нужно)
+     * Set rect externally (if necessary)
      */
     fun setCropRect(r: RectF) {
         rect.set(r)

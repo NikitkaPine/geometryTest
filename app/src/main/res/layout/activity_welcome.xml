@@ -27,19 +27,19 @@
         android:layout_height="100dp"
         android:layout_margin="20dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="История"
+        android:contentDescription="History"
         android:src="@android:drawable/ic_menu_recent_history"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Новая кнопка калькулятора -->
+    <!-- New calculator button -->
     <ImageButton
         android:id="@+id/button_calculator"
         android:layout_width="65dp"
         android:layout_height="100dp"
         android:layout_margin="20dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Калькулятор фигур"
+        android:contentDescription="Shape calculator"
         android:src="@android:drawable/ic_menu_compass"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

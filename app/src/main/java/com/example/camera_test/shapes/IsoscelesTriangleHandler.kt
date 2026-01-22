@@ -42,7 +42,7 @@ class IsoscelesTriangleHandler(
         val angleB = inputIsoAngleB.text.toString().toDoubleOrNull()?.let { Math.toRadians(it) }
         val angleC = inputIsoAngleC.text.toString().toDoubleOrNull()?.let { Math.toRadians(it) }
 
-        // Проверка на валидность углов, если они введены
+        // Checking the validity of angles, if they are entered
         val angleASet = angleA != null
         val angleBSet = angleB != null
         val angleCSet = angleC != null
@@ -241,7 +241,7 @@ class IsoscelesTriangleHandler(
                 setTextIfDifferent(inputIsoAngleB, Math.toDegrees(angleC))
             }
             else -> {
-                // Если ввод некорректен
+                // If the input is incorrect
                 tvError.visibility = View.VISIBLE
             }
         }

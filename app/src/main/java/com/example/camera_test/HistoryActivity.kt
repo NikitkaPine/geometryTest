@@ -21,7 +21,7 @@ class HistoryActivity : AppCompatActivity() {
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Загружаем историю
+
         val historyItems = loadHistory()
 
         if (historyItems.isEmpty()) {

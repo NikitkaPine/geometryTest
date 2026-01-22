@@ -24,7 +24,7 @@ class PhotoCheck : AppCompatActivity() {
     private var currentBitmap: Bitmap? = null
     private var currentResult: ShapeClassifier.ClassificationResult? = null
 
-    // Классификатор фигур
+    // Figure classifier
     private lateinit var shapeClassifier: ShapeClassifier
 
     companion object {
@@ -35,30 +35,30 @@ class PhotoCheck : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_photo_check)
 
-        // Инициализация UI
+        // Initialize UI
         initViews()
 
-        // Инициализация классификатора
+        // Initialization of the classifier
         try {
             shapeClassifier = ShapeClassifier(this)
-            Log.d(TAG, "✓ Классификатор инициализирован")
+            Log.d(TAG, "✓ Classifier initialized")
         } catch (e: Exception) {
-            Log.e(TAG, "✗ Ошибка инициализации классификатора", e)
-            Toast.makeText(this, "Ошибка загрузки модели: ${e.message}", Toast.LENGTH_LONG).show()
+            Log.e(TAG, "✗ Classifier initialization error", e)
+            Toast.makeText(this, "Model loading error: ${e.message}", Toast.LENGTH_LONG).show()
             finish()
             return
         }
 
-        // Получаем URI изображения
+        // Get the image URI
         val uriString = intent.getStringExtra("image_uri")
         isTemp = intent.getBooleanExtra("is_temp", false)
 
         if (uriString != null) {
             imageUri = Uri.parse(uriString)
             displayImage()
-            classifyImage() // Автоматически классифицируем
+            classifyImage() // Automatically classify
         } else {
-            Toast.makeText(this, "Ошибка: изображение не найдено", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error: image not found", Toast.LENGTH_SHORT).show()
             finish()
         }
 
@@ -73,7 +73,7 @@ class PhotoCheck : AppCompatActivity() {
     }
 
     /**
-     * Отображает изображение
+     * Displays the image
      */
     private fun displayImage() {
         imageUri?.let { uri ->
@@ -82,105 +82,105 @@ class PhotoCheck : AppCompatActivity() {
                 currentBitmap = BitmapFactory.decodeStream(inputStream)
                 imageView.setImageBitmap(currentBitmap)
                 inputStream?.close()
-                Log.d(TAG, "✓ Изображение загружено")
+                Log.d(TAG, "✓ Image loaded")
             } catch (e: Exception) {
-                Log.e(TAG, "✗ Ошибка загрузки изображения", e)
-                Toast.makeText(this, "Не удалось загрузить изображение", Toast.LENGTH_SHORT).show()
+                Log.e(TAG, "✗ Image loading error", e)
+                Toast.makeText(this, "Image failed to load", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     /**
-     * Классифицирует изображение
+     * Classifies an image
      */
     private fun classifyImage() {
         currentBitmap?.let { bitmap ->
-            // Показываем процесс
-            resultTextView.text = "🔍 Анализирую изображение..."
-            Toast.makeText(this, "🔍 Анализирую изображение...", Toast.LENGTH_SHORT).show()
+            // Showing the process
+            resultTextView.text = "🔍 Analyzing the image..."
+            Toast.makeText(this, "🔍 Analyzing the image...", Toast.LENGTH_SHORT).show()
 
-            // Запускаем классификацию в фоновом потоке
+            // Start classification in the background thread
             Thread {
                 val result = shapeClassifier.classifyShape(bitmap)
 
-                // Обновляем UI в главном потоке
+                // Update the UI in the main thread
                 runOnUiThread {
                     if (result != null) {
                         currentResult = result
                         displayResult(result)
 
-                        // Toast с результатом в зависимости от уверенности
+                        // Toast with result depending on confidence
                         when {
                             result.confidence > 0.7f -> {
-                                // Высокая уверенность
+                                // High confidence
                                 Toast.makeText(
                                     this,
-                                    "✅ Распознано: ${result.classNameRu}",
+                                    "✅ Recognized: ${result.classNameRu}",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
                             result.confidence > 0.4f -> {
-                                // Средняя уверенность
+                                // Medium confidence
                                 Toast.makeText(
                                     this,
-                                    "⚠️ Возможно: ${result.classNameRu} (${(result.confidence * 100).toInt()}%)",
+                                    "⚠️ Possibly: ${result.classNameRu} (${(result.confidence * 100).toInt()}%)",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
                             else -> {
-                                // Низкая уверенность
+                                // Low confidence
                                 Toast.makeText(
                                     this,
-                                    "❓ Не уверен, но похоже на: ${result.classNameRu} (${(result.confidence * 100).toInt()}%)",
+                                    "❓ Not sure, but it looks like: ${result.classNameRu} (${(result.confidence * 100).toInt()}%)",
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
                         }
                     } else {
-                        // Ошибка классификации
-                        resultTextView.text = "❌ Ошибка распознавания"
+                        // Classification error
+                        resultTextView.text = "❌ Recognition error"
                         Toast.makeText(
                             this,
-                            "❌ Модель не работает: не удалось распознать фигуру",
+                            "❌ Model not working: unable to recognize figure",
                             Toast.LENGTH_LONG
                         ).show()
                     }
                 }
             }.start()
         } ?: run {
-            // Bitmap не загружен
+            // Bitmap not loaded
             Toast.makeText(
                 this,
-                "❌ Модель не работает: изображение не загружено",
+                "❌ Model not working: image not loaded",
                 Toast.LENGTH_LONG
             ).show()
         }
     }
 
     /**
-     * Отображает результаты классификации
+     * Displays classification results
      */
     private fun displayResult(result: ShapeClassifier.ClassificationResult) {
         val resultText = buildString {
-            // Заголовок в зависимости от уверенности
+            // Heading depending on confidence
             when {
                 result.confidence > 0.7f -> {
-                    append("✅ Распознано: ${result.classNameRu}\n")
+                    append("✅ Recognized: ${result.classNameRu}\n")
                 }
                 result.confidence > 0.4f -> {
-                    append("⚠️ Вероятно: ${result.classNameRu}\n")
+                    append("⚠️ Probably: ${result.classNameRu}\n")
                 }
                 else -> {
-                    append("❓ Приближенный результат: ${result.classNameRu}\n")
+                    append("❓ Approximate result: ${result.classNameRu}\n")
                 }
             }
 
-            append("🎯 Уверенность: ${(result.confidence * 100).toInt()}%\n\n")
+            append("🎯 Confidence: ${(result.confidence * 100).toInt()}%\n\n")
 
-            append("📊 Все результаты:\n")
+            append("📊 All results:\n")
             result.allScores.entries
                 .sortedByDescending { it.value }
-                .take(5) // Показываем топ-5
+                .take(5) // Showing the top 5
                 .forEachIndexed { index, (label, score) ->
                     val emoji = when (index) {
                         0 -> "🥇"
@@ -194,29 +194,27 @@ class PhotoCheck : AppCompatActivity() {
         }
 
         resultTextView.text = resultText
-        Log.d(TAG, "Результат отображен")
+        Log.d(TAG, "The result is displayed")
     }
 
-    /**
-     * Переводит метку на русский
-     */
+
     private fun translateLabel(label: String): String {
         return when (label.lowercase()) {
-            "square" -> "Квадрат"
-            "rectangle" -> "Прямоугольник"
-            "equilateral_triangle" -> "Равност. треугольник"
-            "right_triangle" -> "Прямоуг. треугольник"
-            "isosceles_triangle" -> "Равнобед. треугольник"
-            "circle" -> "Круг"
-            "rhombus" -> "Ромб"
+            "square" -> "Square"
+            "rectangle" -> "Rectangle"
+            "equilateral_triangle" -> "Equilateral triangle"
+            "right_triangle" -> "Rectangular triangle"
+            "isosceles_triangle" -> "Equilateral triangle"
+            "circle" -> "Circle"
+            "rhombus" -> "Rhombus"
             else -> label
         }
     }
 
     private fun setupButtons() {
-        // Кнопка "Принять"
+        // Accept button
         buttonAccept.setOnClickListener {
-            // Сохраняем в историю
+            // Save to history
             val result = currentResult
             if (result != null && imageUri != null) {
                 val saved = HistoryManager.saveImage(
@@ -228,25 +226,25 @@ class PhotoCheck : AppCompatActivity() {
                 if (saved) {
                     Toast.makeText(
                         this,
-                        "✅ Сохранено в историю: ${result.classNameRu}",
+                        "✅ Saved in history: ${result.classNameRu}",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
                     Toast.makeText(
                         this,
-                        "⚠️ Ошибка сохранения в историю",
+                        "⚠️ Error saving to history",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             } else {
                 Toast.makeText(
                     this,
-                    "⚠️ Нечего сохранять",
+                    "⚠️ Nothing to save",
                     Toast.LENGTH_SHORT
                 ).show()
             }
 
-            // Удаляем временное фото если оно было
+            // Delete the temporary photo if it was there
             if (isTemp) {
                 deleteTemporaryPhoto()
             }
@@ -254,9 +252,9 @@ class PhotoCheck : AppCompatActivity() {
             finish()
         }
 
-        // Кнопка "Переснять"
+        // “Reshoot” button
         buttonRetake.setOnClickListener {
-            // Удаляем временное фото если оно было
+            // Delete the temporary photo if it was there
             if (isTemp) {
                 deleteTemporaryPhoto()
             }
@@ -265,26 +263,26 @@ class PhotoCheck : AppCompatActivity() {
     }
 
     /**
-     * Удаляет временное фото
+     * Deletes a temporary photo
      */
     private fun deleteTemporaryPhoto() {
         imageUri?.let { uri ->
             try {
                 val file = File(uri.path ?: return)
                 if (file.exists() && file.delete()) {
-                    Log.d(TAG, "✓ Временное фото удалено")
+                    Log.d(TAG, "✓ Temporary photo deleted")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "✗ Ошибка удаления временного фото", e)
+                Log.e(TAG, "✗ Error deleting temporary photo", e)
             }
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Освобождаем ресурсы классификатора
+        // Free up classifier resources
         shapeClassifier.close()
-        // Освобождаем bitmap
+        // Free the bitmap
         currentBitmap?.recycle()
         currentBitmap = null
     }

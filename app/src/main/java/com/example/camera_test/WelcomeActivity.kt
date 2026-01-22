@@ -36,12 +36,12 @@ class WelcomeActivity : AppCompatActivity() {
 
     private lateinit var buttonCalculator: ImageButton
 
-    // Менеджеры
+    // Managers
     private lateinit var cameraManager: CameraManager
     private lateinit var permissionManager: PermissionManager
 
     /**
-     * Launcher для запроса разрешения
+     * Launcher for requesting permission
      */
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -50,7 +50,7 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
     /**
-     * Callback для разрешений
+     * Callback for permissions
      */
     private val permissionCallback = object : PermissionManager.PermissionCallback {
         override fun onPermissionGranted() {
@@ -58,7 +58,7 @@ class WelcomeActivity : AppCompatActivity() {
         }
 
         override fun onPermissionDenied() {
-            // Preview не будет работать, но кнопки работают
+            // Preview will not work, but the buttons work
         }
     }
 
@@ -67,22 +67,22 @@ class WelcomeActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_welcome)
 
-        // Инициализация UI
+        // Initialization of the UI
         initViews()
 
-        // Инициализация менеджеров
+        // Initialization of managers
         permissionManager = PermissionManager(this, requestPermissionLauncher)
         cameraManager = CameraManager(this, this, previewView)
 
-        // Настройка кнопок
+        // Button settings
         setupButtons()
 
-        // Запрос разрешения и запуск камеры
+        // Request permission and launch camera
         permissionManager.checkAndRequestPermission(permissionCallback)
     }
 
     /**
-     * Инициализация UI элементов
+     * Initialization of UI elements
      */
     private fun initViews() {
         previewView = findViewById(R.id.previewView)
@@ -94,17 +94,17 @@ class WelcomeActivity : AppCompatActivity() {
     }
 
     /**
-     * Настройка обработчиков кнопок
+     * Configuring button handlers
      */
     private fun setupButtons() {
-        // Кнопка "Make Photo" - делает фото
+        // “Make Photo” button - takes a photo
         cameraButton.setOnClickListener {
             cameraManager.takePhoto(object : CameraManager.PhotoCaptureCallback {
                 override fun onPhotoSaved(uri: android.net.Uri) {
-                    // Открываем PhotoCheck с сделанным фото для обработки
+                    // Open PhotoCheck with the photo you took for processing
                     val intent = Intent(this@WelcomeActivity, PhotoCheck::class.java)
                     intent.putExtra("image_uri", uri.toString())
-                    intent.putExtra("is_temp",true)// флаг временного фото
+                    intent.putExtra("is_temp",true)// temporary photo flag
                     startActivity(intent)
                 }
 
@@ -118,12 +118,12 @@ class WelcomeActivity : AppCompatActivity() {
             })
         }
 
-        // Кнопка "Open Gallery"
+        // “Open Gallery” button
         imageButton.setOnClickListener {
             GalleryHelper.openGallery(this, single = true)
         }
 
-        // Кнопка "Figure List"
+        // “Figure List” button
         listButton.setOnClickListener {
             Toast.makeText(this, "Clicked!", Toast.LENGTH_SHORT).show()
         }
@@ -163,7 +163,7 @@ class WelcomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        // Если разрешение появилось (выдано в настройках) - запускаем камеру
+        // If permission has been granted (issued in settings), start the camera.
         if (permissionManager.hasPermission() && !cameraManager.isCameraRunning()) {
             cameraManager.startCamera()
         }

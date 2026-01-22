@@ -20,8 +20,8 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 /**
- * Менеджер для работы с CameraX
- * Управляет Preview и захватом фото
+ * Manager for working with CameraX
+ * Controls preview and photo capture
  */
 class CameraManager(
     private val context: Context,
@@ -29,13 +29,13 @@ class CameraManager(
     private val previewView: PreviewView
 ) {
 
-    // Executor для фоновых операций камеры
+    // Executor for background camera operations
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
-    // ImageCapture для захвата фото
+    // ImageCapture for capturing photos
     private var imageCapture: ImageCapture? = null
 
-    // Флаг состояния камеры
+    // Camera status flag
     private var isCameraStarted = false
 
     companion object {
@@ -44,7 +44,7 @@ class CameraManager(
     }
 
     /**
-     * Callback для результатов захвата фото
+     * Callback for photo capture results
      */
     interface PhotoCaptureCallback {
         fun onPhotoSaved(uri: Uri)
@@ -52,11 +52,11 @@ class CameraManager(
     }
 
     /**
-     * Запускает камеру (Preview + ImageCapture)
+     * Starts the camera (Preview + ImageCapture)
      */
     fun startCamera() {
         if (isCameraStarted) {
-            Log.d(TAG, "Камера уже запущена")
+            Log.d(TAG, "The camera has already been launched.")
             return
         }
 
@@ -68,38 +68,38 @@ class CameraManager(
                 val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
                 bindCamera(cameraProvider)
                 isCameraStarted = true
-                Log.d(TAG, "Камера успешно запущена")
+                Log.d(TAG, "The camera is successfully launched.")
             } catch (e: Exception) {
-                Log.e(TAG, "Ошибка при запуске камеры", e)
-                showToast("Ошибка камеры: ${e.message}")
+                Log.e(TAG, "Error when starting the camera", e)
+                showToast("Camera error: ${e.message}")
             }
         }, ContextCompat.getMainExecutor(context))
     }
 
     /**
-     * Привязывает Use Cases к камере
+     * Links Use Cases to the camera
      */
     private fun bindCamera(cameraProvider: ProcessCameraProvider) {
         try {
-            // 1. Создаем Preview Use Case
+            // 1. Create a Preview Use Case
             val preview = Preview.Builder()
                 .build()
                 .also {
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
-            // 2. Создаем ImageCapture Use Case
+            // 2. Create ImageCapture Use Case
             imageCapture = ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                 .build()
 
-            // 3. Выбираем заднюю камеру
+            // 3. Select the rear camera
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-            // 4. Отвязываем предыдущие use cases
+            // 4. Untie previous use cases
             cameraProvider.unbindAll()
 
-            // 5. Привязываем к lifecycle
+            // 5. Bind to lifecycle
             cameraProvider.bindToLifecycle(
                 lifecycleOwner,
                 cameraSelector,
@@ -107,64 +107,64 @@ class CameraManager(
                 imageCapture
             )
 
-            Log.d(TAG, "Use Cases успешно привязаны")
+            Log.d(TAG, "Use Cases successfully linked")
 
         } catch (e: Exception) {
-            Log.e(TAG, "Ошибка при привязке камеры", e)
+            Log.e(TAG, "Error when linking the camera", e)
             isCameraStarted = false
         }
     }
 
     /**
-     * Делает фото и сохраняет его в папку приложения
+     * Takes a photo and saves it to the application folder.
      */
     fun takePhoto(callback: PhotoCaptureCallback) {
-        // Проверяем готовность ImageCapture
+        // Checking ImageCapture readiness
         val imageCapture = imageCapture ?: run {
-            showToast("Камера ещё не готова")
-            callback.onError(Exception("ImageCapture не инициализирован"))
+            showToast("The camera is not ready yet.")
+            callback.onError(Exception("ImageCapture is not initialized"))
             return
         }
 
-        // Создаём папку для временных фото
+        // Create a folder for temporary photos
         val photoDir = File(context.filesDir, "temp_photos")
         if (!photoDir.exists()) {
             photoDir.mkdirs()
         }
 
-        // Создаём имя файла с timestamp
+        // Create a file name with a timestamp
         val timestamp = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
         val photoFile = File(photoDir, "photo_$timestamp.jpg")
 
-        // Создаём OutputFileOptions для сохранения в файл
+        // Create OutputFileOptions to save to file
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(photoFile)
             .build()
 
-        // Делаем фото
+        // Taking photos
         imageCapture.takePicture(
             outputOptions,
             cameraExecutor,
             object : ImageCapture.OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Ошибка при сохранении фото: ${exc.message}", exc)
+                    Log.e(TAG, "Error saving photo: ${exc.message}", exc)
                     runOnMainThread {
-                        showToast("Не удалось сделать фото")
+                        showToast("Unable to take a photo")
                         callback.onError(exc)
                     }
                 }
 
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    // Получаем URI файла
+                    // Get the file URI
                     val savedUri = Uri.fromFile(photoFile)
-                    Log.d(TAG, "Фото сохранено: $savedUri")
+                    Log.d(TAG, "Photo saved: $savedUri")
 
                     runOnMainThread {
-                        showToast("Фото сделано!")
+                        showToast("The photo is taken!")
                         callback.onPhotoSaved(savedUri)
 
-                        // Визуальная вспышка
+
                         flashScreen()
                     }
                 }
@@ -173,7 +173,7 @@ class CameraManager(
     }
 
     /**
-     * Визуальная вспышка экрана
+     * Visual screen flash
      */
     private fun flashScreen() {
         previewView.postDelayed({
@@ -188,27 +188,27 @@ class CameraManager(
     }
 
     /**
-     * Проверяет запущена ли камера
+     * Checks whether the camera is running
      */
     fun isCameraRunning(): Boolean = isCameraStarted
 
     /**
-     * Освобождает ресурсы
+     * Frees resources
      */
     fun release() {
         cameraExecutor.shutdown()
-        Log.d(TAG, "Ресурсы камеры освобождены")
+        Log.d(TAG, "Camera resources freed up")
     }
 
     /**
-     * Вспомогательная функция для показа Toast
+     * Helper function for displaying Toast
      */
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     /**
-     * Вспомогательная функция для выполнения в главном потоке
+     * Auxiliary function to be executed in the main thread
      */
     private fun runOnMainThread(action: () -> Unit) {
         ContextCompat.getMainExecutor(context).execute(action)

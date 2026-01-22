@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".PhotoCheck">
 
-    <!-- Фото -->
+    <!-- Photo -->
     <EditText
         android:id="@+id/resultText"
         android:layout_width="match_parent"
@@ -27,13 +27,13 @@
         android:adjustViewBounds="true"
         android:background="#000" />
 
-    <!-- Полупрозрачный слой для выделения -->
+    <!-- Semi-transparent layer for highlighting -->
     <com.example.camera_test.SelectionView
         android:id="@+id/selection_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <!-- Панель кнопок -->
+    <!-- Button panel -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
@@ -48,7 +48,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:text="Отмена"
+            android:text="Cancel"
             android:textColor="@android:color/white"
             android:background="@android:color/transparent"
             android:textSize="18sp" />
@@ -58,7 +58,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:text="Готово"
+            android:text="Ready"
             android:textColor="@android:color/white"
             android:background="@android:color/transparent"
             android:textSize="18sp" />

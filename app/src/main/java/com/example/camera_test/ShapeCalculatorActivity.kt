@@ -20,6 +20,9 @@ import com.example.camera_test.shapes.RectangleHandler
 import com.example.camera_test.shapes.RightTriangleHandler
 import com.example.camera_test.shapes.ShapeHandler
 import com.example.camera_test.shapes.SquareHandler
+import android.view.ViewGroup
+import android.graphics.Color
+
 
 class ShapeCalculatorActivity : AppCompatActivity() {
 
@@ -37,27 +40,27 @@ class ShapeCalculatorActivity : AppCompatActivity() {
     private var currentHandler: ShapeHandler? = null
     private lateinit var handlers: Map<ShapeType, ShapeHandler>
 
-    // Поля ввода параметров - Круг
+    // Parameter input fields - Circle
     private lateinit var inputRadius: EditText
     private lateinit var inputDiameter: EditText
 
-    // Поля ввода параметров - Квадрат
+    // Parameter input fields - Square
     private lateinit var inputSquareSide: EditText
     private lateinit var inputSquareDiagonal: EditText
 
-    // Поля ввода параметров - Прямоугольник
+    // Parameter input fields - Rectangle
     private lateinit var inputRectWidth: EditText
     private lateinit var inputRectHeight: EditText
     private lateinit var inputRectDiagonal: EditText
 
-    // Поля ввода параметров - Равнобедренный треугольник
+    // Parameter input fields - Isosceles triangle
     private lateinit var inputIsoSide: EditText
     private lateinit var inputIsoBase: EditText
     private lateinit var inputIsoAngleA: EditText
     private lateinit var inputIsoAngleB: EditText
     private lateinit var inputIsoAngleC: EditText
 
-    // Поля ввода параметров - Прямоугольный треугольник
+    // Parameter input fields - Right-angled triangle
     private lateinit var inputRightA: EditText
     private lateinit var inputRightB: EditText
     private lateinit var inputRightC: EditText
@@ -65,13 +68,13 @@ class ShapeCalculatorActivity : AppCompatActivity() {
     private lateinit var inputRightAngleB: EditText
     private lateinit var inputRightAngleC: EditText
 
-    // Поля результатов
+    // Result fields
     private lateinit var inputPerimeter: EditText
     private lateinit var inputArea: EditText
     private lateinit var resultIsoBisectorValue: EditText
     private lateinit var resultRightBisectorValue: EditText
 
-    // Контейнеры полей
+    // Field containers
     private lateinit var fieldRadius: LinearLayout
     private lateinit var fieldDiameter: LinearLayout
     private lateinit var fieldSquareSide: LinearLayout
@@ -189,11 +192,31 @@ class ShapeCalculatorActivity : AppCompatActivity() {
 
     private fun setupSpinner() {
         val shapes = arrayOf(
-            "Выберите фигуру", "Круг", "Квадрат", "Прямоугольник",
-            "Треугольник равнобедренный", "Треугольник прямоугольный"
+            "Select a shape", "Circle", "Square", "Rectangle",
+            "Isosceles triangle", "Right-angled triangle"
         )
 
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, shapes)
+        val adapter = object : ArrayAdapter<String>(
+            this,
+            android.R.layout.simple_spinner_item,
+            shapes
+        ) {
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                view.setTextColor(Color.BLACK)
+                view.textSize = 16f
+                return view
+            }
+
+            override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getDropDownView(position, convertView, parent) as TextView
+                view.setTextColor(Color.BLACK)
+                view.setBackgroundColor(Color.WHITE)
+                view.setPadding(32, 24, 32, 24)
+                return view
+            }
+        }
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         shapeSpinner.adapter = adapter
 
@@ -207,17 +230,32 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                     5 -> ShapeType.RIGHT_TRIANGLE
                     else -> ShapeType.NONE
                 }
+
                 if (newType != currentShapeType) {
                     hideAllFields()
                     currentShapeType = newType
                     currentHandler = handlers[newType]
                     currentHandler?.showFields()
-                    inputContainerLeft.visibility = if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
-                    inputContainerRight.visibility = if (newType == ShapeType.ISOSCELES_TRIANGLE || newType == ShapeType.RIGHT_TRIANGLE) View.VISIBLE else View.GONE
-                    resultsContainer.visibility = if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
-                    resultIsoBisector.visibility = if (newType == ShapeType.ISOSCELES_TRIANGLE) View.VISIBLE else View.GONE
-                    resultRightBisector.visibility = if (newType == ShapeType.RIGHT_TRIANGLE) View.VISIBLE else View.GONE
-                    btnReset.visibility = if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
+
+                    inputContainerLeft.visibility =
+                        if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
+
+                    inputContainerRight.visibility =
+                        if (newType == ShapeType.ISOSCELES_TRIANGLE || newType == ShapeType.RIGHT_TRIANGLE)
+                            View.VISIBLE else View.GONE
+
+                    resultsContainer.visibility =
+                        if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
+
+                    resultIsoBisector.visibility =
+                        if (newType == ShapeType.ISOSCELES_TRIANGLE) View.VISIBLE else View.GONE
+
+                    resultRightBisector.visibility =
+                        if (newType == ShapeType.RIGHT_TRIANGLE) View.VISIBLE else View.GONE
+
+                    btnReset.visibility =
+                        if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
+
                     shapeCanvas.setShape(currentShapeType)
                     tvError.visibility = View.GONE
                 }
@@ -228,6 +266,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun setupAutoCalculation() {
         val textWatcher = object : TextWatcher {
@@ -272,7 +311,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
 
         tvError.visibility = View.GONE
 
-        android.widget.Toast.makeText(this, "Все значения сброшены", android.widget.Toast.LENGTH_SHORT).show()
+        android.widget.Toast.makeText(this, "All values reset", android.widget.Toast.LENGTH_SHORT).show()
     }
 
     private fun hideAllFields() {

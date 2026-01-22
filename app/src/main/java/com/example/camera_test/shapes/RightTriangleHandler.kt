@@ -45,7 +45,7 @@ class RightTriangleHandler(
         val angleA = inputRightAngleA.text.toString().toDoubleOrNull()?.let { Math.toRadians(it) }
         val angleC = inputRightAngleC.text.toString().toDoubleOrNull()?.let { Math.toRadians(it) }
 
-        // Проверка на валидность углов
+        // Checking the validity of angles
         val angleASet = angleA != null
         val angleCSet = angleC != null
         if (angleASet && angleCSet) {

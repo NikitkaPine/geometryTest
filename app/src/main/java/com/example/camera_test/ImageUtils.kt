@@ -9,8 +9,8 @@ import java.io.OutputStream
 
 object ImageUtils {
     /**
-     * Сохраняет bitmap в DCIM/Cropped (Android Q+) или в MediaStore (старые) и возвращает строку-Uri.
-     * Возвращает null при ошибке.
+     * Saves the bitmap to DCIM/Cropped (Android Q+) or MediaStore (older versions) and returns a string Uri.
+     * Returns null on error.
      */
     fun saveBitmapToGallery(context: Context, bitmap: Bitmap): String? {
         return try {

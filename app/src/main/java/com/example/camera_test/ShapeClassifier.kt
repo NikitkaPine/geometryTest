@@ -11,15 +11,15 @@ import java.nio.MappedByteBuffer
 import java.nio.channels.FileChannel
 
 /**
- * Классификатор геометрических фигур с использованием TensorFlow Lite
+ * Classifier of geometric shapes using TensorFlow Lite
  */
 class ShapeClassifier(context: Context) {
 
     private var interpreter: Interpreter? = null
     private val labels: List<String>
-    private val inputSize = 64 // Размер входного изображения (из модели)
-    private val pixelSize = 3 // RGB = 3 канала
-    private val imageSTD = 255.0f // Для нормализации
+    private val inputSize = 64 // Input image size (from model)
+    private val pixelSize = 3 // RGB = 3 channels
+    private val imageSTD = 255.0f // For normalization
 
     companion object {
         private const val TAG = "ShapeClassifier"
@@ -28,34 +28,34 @@ class ShapeClassifier(context: Context) {
     }
 
     /**
-     * Результат классификации
+     * Classification result
      */
     data class ClassificationResult(
         val className: String,
-        val classNameRu: String, // Русское название
+        val classNameRu: String, // Russian name
         val confidence: Float,
         val allScores: Map<String, Float>
     )
 
     init {
         try {
-            // Загружаем модель
+            // Load the model
             val model = loadModelFile(context)
             interpreter = Interpreter(model)
-            Log.d(TAG, "✓ Модель загружена успешно")
+            Log.d(TAG, "✓ Model loaded successfully")
 
-            // Загружаем метки классов
+            // Load class tags
             labels = loadLabels(context)
-            Log.d(TAG, "✓ Метки загружены: ${labels.size} классов")
+            Log.d(TAG, "✓ Tags loaded: ${labels.size} classes")
 
         } catch (e: Exception) {
-            Log.e(TAG, "✗ Ошибка загрузки модели: ${e.message}", e)
+            Log.e(TAG, "✗ Model loading error: ${e.message}", e)
             throw e
         }
     }
 
     /**
-     * Загружает .tflite модель из assets
+     * Loads the .tflite model from assets
      */
     private fun loadModelFile(context: Context): MappedByteBuffer {
         val fileDescriptor = context.assets.openFd(MODEL_PATH)
@@ -67,7 +67,7 @@ class ShapeClassifier(context: Context) {
     }
 
     /**
-     * Загружает метки классов из labels.txt
+     * Loads class labels from labels.txt
      */
     private fun loadLabels(context: Context): List<String> {
         return context.assets.open(LABEL_PATH)
@@ -76,39 +76,39 @@ class ShapeClassifier(context: Context) {
     }
 
     /**
-     * Классифицирует фигуру на изображении
+     * Classifies a shape in an image
      */
     fun classifyShape(bitmap: Bitmap): ClassificationResult? {
         if (interpreter == null) {
-            Log.e(TAG, "Интерпретатор не инициализирован")
+            Log.e(TAG, "Interpreter not initialized")
             return null
         }
 
         try {
-            // 1. Подготавливаем изображение
+
             val resizedBitmap = Bitmap.createScaledBitmap(bitmap, inputSize, inputSize, true)
             val inputBuffer = convertBitmapToByteBuffer(resizedBitmap)
 
-            // 2. Создаём выходной буфер
+
             val outputArray = Array(1) { FloatArray(labels.size) }
 
-            // 3. Запускаем инференс
+
             interpreter?.run(inputBuffer, outputArray)
 
-            // 4. Обрабатываем результаты
+
             val scores = outputArray[0]
             val maxIndex = scores.indices.maxByOrNull { scores[it] } ?: 0
 
-            // 5. Создаём карту всех результатов
+
             val allScores = labels.mapIndexed { index, label ->
                 label to scores[index]
             }.toMap()
 
-            // 6. Формируем результат
+
             val className = labels[maxIndex]
             val confidence = scores[maxIndex]
 
-            Log.d(TAG, "Распознано: $className (${(confidence * 100).toInt()}%)")
+            Log.d(TAG, "Recognized: $className (${(confidence * 100).toInt()}%)")
 
             return ClassificationResult(
                 className = className,
@@ -118,13 +118,13 @@ class ShapeClassifier(context: Context) {
             )
 
         } catch (e: Exception) {
-            Log.e(TAG, "Ошибка классификации: ${e.message}", e)
+            Log.e(TAG, "Classification error: ${e.message}", e)
             return null
         }
     }
 
     /**
-     * Конвертирует Bitmap в ByteBuffer для модели
+     * Converts Bitmap to ByteBuffer for the model
      */
     private fun convertBitmapToByteBuffer(bitmap: Bitmap): ByteBuffer {
         val byteBuffer = ByteBuffer.allocateDirect(4 * inputSize * inputSize * pixelSize)
@@ -138,7 +138,7 @@ class ShapeClassifier(context: Context) {
             for (j in 0 until inputSize) {
                 val value = intValues[pixel++]
 
-                // Нормализация RGB значений (0-255) -> (0-1)
+                // Normalization of RGB values (0-255) -> (0-1)
                 byteBuffer.putFloat(((value shr 16) and 0xFF) / imageSTD)
                 byteBuffer.putFloat(((value shr 8) and 0xFF) / imageSTD)
                 byteBuffer.putFloat((value and 0xFF) / imageSTD)
@@ -148,28 +148,26 @@ class ShapeClassifier(context: Context) {
         return byteBuffer
     }
 
-    /**
-     * Переводит английское название фигуры на русский
-     */
+
     private fun translateClassName(className: String): String {
         return when (className.lowercase()) {
-            "square" -> "Квадрат"
-            "rectangle" -> "Прямоугольник"
-            "equilateral_triangle" -> "Равносторонний треугольник"
-            "right_triangle" -> "Прямоугольный треугольник"
-            "isosceles_triangle" -> "Равнобедренный треугольник"
-            "circle" -> "Круг"
-            "rhombus" -> "Ромб"
+            "square" -> "Square"
+            "rectangle" -> "Rectangle"
+            "equilateral_triangle" -> "Equilateral triangle"
+            "right_triangle" -> "Rectangular triangle"
+            "isosceles_triangle" -> "Isosceles triangle"
+            "circle" -> "Circle"
+            "rhombus" -> "Rhombus"
             else -> className
         }
     }
 
     /**
-     * Освобождает ресурсы
+     * Frees resources
      */
     fun close() {
         interpreter?.close()
         interpreter = null
-        Log.d(TAG, "Ресурсы классификатора освобождены")
+        Log.d(TAG, "Classifier resources are free")
     }
 }

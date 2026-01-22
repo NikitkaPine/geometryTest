@@ -91,7 +91,7 @@ class ShapeCanvasView @JvmOverloads constructor(
 
         canvas.drawRect(left, top, right, bottom, linePaint)
 
-        // Диагонали
+        // Diagonals
         canvas.drawLine(left, top, right, bottom, thinLinePaint)
         canvas.drawLine(right, top, left, bottom, thinLinePaint)
 
@@ -119,7 +119,7 @@ class ShapeCanvasView @JvmOverloads constructor(
 
         canvas.drawRect(left, top, right, bottom, linePaint)
 
-        // Диагонали
+        // Diagonals
         canvas.drawLine(left, top, right, bottom, thinLinePaint)
         canvas.drawLine(right, top, left, bottom, thinLinePaint)
 
@@ -140,9 +140,9 @@ class ShapeCanvasView @JvmOverloads constructor(
     private fun drawIsoscelesTriangleWithLabels(canvas: Canvas, cx: Float, cy: Float, size: Float) {
         val path = Path()
 
-        // A - вершина (сверху)
-        // B - левый угол у основания
-        // C - правый угол у основания
+        // A - top corner (top)
+        // B - left corner at the base
+        // C - right corner at the base
         val topX = cx
         val topY = cy - size / 2
         val leftX = cx - size / 2
@@ -157,12 +157,12 @@ class ShapeCanvasView @JvmOverloads constructor(
 
         canvas.drawPath(path, linePaint)
 
-        // Бисектриса от вершины A к основанию (она же высота и медиана)
+        // Bisector from vertex A to the base (also known as the height and median)
         val baseMidX = (leftX + rightX) / 2
         val baseMidY = (leftY + rightY) / 2
         canvas.drawLine(topX, topY, baseMidX, baseMidY, thinLinePaint)
 
-        // Отмечаем равные боковые стороны (одна черточка на каждой)
+        // Mark the equal sides (one line on each)
         val leftMidX = (topX + leftX) / 2
         val leftMidY = (topY + leftY) / 2
 
@@ -183,11 +183,11 @@ class ShapeCanvasView @JvmOverloads constructor(
         canvas.drawLine(-8f, 0f, 8f, 0f, thinLinePaint)
         canvas.restore()
 
-        // Отмечаем равные углы у основания B и C (маленькие дуги)
+        // Mark equal angles at the base B and C (small arcs)
         val arcRadius = 30f
 
-        // Левый угол B - от основания к боковой стороне
-        val angleBStart = 0f // От горизонтали (основания)
+        // Left corner B - from the base to the side
+        val angleBStart = 0f // From the horizontal (base)
         val angleBToSide = Math.toDegrees(Math.atan2((topY - leftY).toDouble(), (topX - leftX).toDouble())).toFloat()
         val angleBSweep = angleBToSide - angleBStart
 
@@ -197,7 +197,7 @@ class ShapeCanvasView @JvmOverloads constructor(
             angleBStart, angleBSweep, false, thinLinePaint
         )
 
-        // Правый угол C - инверсия (рисуем маленькую дугу с другой стороны)
+        // Right angle C - inversion (draw a small arc on the other side)
         val angleCToSide = Math.toDegrees(Math.atan2((topY - rightY).toDouble(), (topX - rightX).toDouble())).toFloat()
         val angleCStart = 180f
         val angleCEnd = angleCToSide + 360f
@@ -209,12 +209,12 @@ class ShapeCanvasView @JvmOverloads constructor(
             angleCStart, angleCSweep, false, thinLinePaint
         )
 
-        // Буквы вершин
+        // Vertex letters
         canvas.drawText("A", topX, topY - 20, textPaint)
         canvas.drawText("B", leftX - 30, leftY + 40, textPaint)
         canvas.drawText("C", rightX + 30, rightY + 40, textPaint)
 
-        // Обозначение сторон
+        // Designation of parties
         canvas.drawText("a", leftMidX - 25, leftMidY, smallTextPaint)
         canvas.drawText("a", rightMidX + 25, rightMidY, smallTextPaint)
         canvas.drawText("b", cx, leftY + 30, smallTextPaint)
@@ -236,12 +236,12 @@ class ShapeCanvasView @JvmOverloads constructor(
 
         canvas.drawPath(path, linePaint)
 
-        // Бисектриса от прямого угла B к гипотенузе
+        // Bisector from right angle B to hypotenuse
         val hypMidX = (leftX + rightX) / 2
         val hypMidY = (topY + bottomY) / 2
         canvas.drawLine(leftX, bottomY, hypMidX, hypMidY, thinLinePaint)
 
-        // Квадратик прямого угла
+        // Square of a right angle
         val squareSize = 25f
         canvas.drawRect(
             leftX,
@@ -251,12 +251,12 @@ class ShapeCanvasView @JvmOverloads constructor(
             linePaint
         )
 
-        // Буквы вершин
+        // Vertex letters
         canvas.drawText("A", leftX - 30, topY - 10, textPaint)
         canvas.drawText("B", leftX - 30, bottomY + 40, textPaint)
         canvas.drawText("C", rightX + 30, bottomY + 40, textPaint)
 
-        // Обозначение сторон
+        // Designation of parties
         canvas.drawText("a", leftX - 35, (topY + bottomY) / 2, smallTextPaint)
         canvas.drawText("b", (leftX + rightX) / 2, bottomY + 30, smallTextPaint)
         canvas.drawText("c", hypMidX + 30, hypMidY, smallTextPaint)

@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
 /**
- * Менеджер для работы с разрешениями камеры
+ * Manager for working with camera permissions
  */
 class PermissionManager(
     private val activity: AppCompatActivity,
@@ -29,7 +29,7 @@ class PermissionManager(
     }
 
     /**
-     * Callback для результатов запроса разрешения
+     * Callback for permission request results
      */
     interface PermissionCallback {
         fun onPermissionGranted()
@@ -37,17 +37,17 @@ class PermissionManager(
     }
 
     /**
-     * Проверяет и запрашивает разрешение если нужно
+     * Checks and requests permission if necessary
      */
     fun checkAndRequestPermission(callback: PermissionCallback) {
         when {
             hasPermission() -> {
-                Log.d(TAG, "Разрешение уже предоставлено")
+                Log.d(TAG, "Permission has already been granted.")
                 callback.onPermissionGranted()
             }
 
             activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-                Log.d(TAG, "Показываем объяснение пользователю")
+                Log.d(TAG, "We show the explanation to the user")
                 showPermissionRationale { granted ->
                     if (granted) callback.onPermissionGranted()
                     else callback.onPermissionDenied()
@@ -55,39 +55,39 @@ class PermissionManager(
             }
 
             !isPermissionRequested -> {
-                Log.d(TAG, "Запрашиваем разрешение впервые")
+                Log.d(TAG, "Requesting permission for the first time")
                 requestPermission()
             }
 
             else -> {
-                Log.d(TAG, "Запрос разрешения уже в процессе")
+                Log.d(TAG, "Permission request already in progress")
             }
         }
     }
 
     /**
-     * Обрабатывает результат запроса разрешения
+     * Processes the result of the permission request
      */
     fun handlePermissionResult(isGranted: Boolean, callback: PermissionCallback) {
         isPermissionRequested = false
 
         when {
             isGranted -> {
-                Log.d(TAG, "Разрешение получено")
+                Log.d(TAG, "Permission granted")
                 permissionDeniedCount = 0
                 callback.onPermissionGranted()
             }
 
             !activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)
                     && permissionDeniedCount >= MAX_PERMISSION_DENIALS -> {
-                Log.w(TAG, "Пользователь выбрал 'Больше не спрашивать'")
+                Log.w(TAG, "The user has selected ‘Don't ask again'")
                 showPermanentlyDeniedDialog()
                 callback.onPermissionDenied()
             }
 
             else -> {
                 permissionDeniedCount++
-                Log.w(TAG, "Отказ в разрешении, попытка #$permissionDeniedCount")
+                Log.w(TAG, "Refusal of permission, attempt #$permissionDeniedCount")
                 showPermissionRationale { granted ->
                     if (granted) callback.onPermissionGranted()
                     else callback.onPermissionDenied()
@@ -97,7 +97,7 @@ class PermissionManager(
     }
 
     /**
-     * Проверяет наличие разрешения
+     * Checks for permission
      */
     fun hasPermission(): Boolean {
         return try {
@@ -106,17 +106,17 @@ class PermissionManager(
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED
         } catch (e: Exception) {
-            Log.e(TAG, "Ошибка при проверке разрешения", e)
+            Log.e(TAG, "Error checking permission", e)
             false
         }
     }
 
     /**
-     * Запрашивает разрешение
+     * Requests permission
      */
     private fun requestPermission() {
         if (isPermissionRequested) {
-            Log.w(TAG, "Разрешение уже запрашивается")
+            Log.w(TAG, "Permission is already being requested.")
             return
         }
 
@@ -124,25 +124,25 @@ class PermissionManager(
         try {
             permissionLauncher.launch(Manifest.permission.CAMERA)
         } catch (e: Exception) {
-            Log.e(TAG, "Ошибка при запросе разрешения", e)
+            Log.e(TAG, "Error when requesting permission", e)
             isPermissionRequested = false
         }
     }
 
     /**
-     * Показывает объяснение почему нужно разрешение
+     * Shows an explanation of why permission is required.
      */
     private fun showPermissionRationale(onResult: (Boolean) -> Unit) {
         AlertDialog.Builder(activity)
-            .setTitle("Нужен доступ к камере")
+            .setTitle("Need access to the camera")
             .setMessage(
-                "Приложению нужен доступ к камере для отображения preview и создания фото."
+                "The app needs access to the camera to display previews and take photos."
             )
-            .setPositiveButton("Предоставить") { dialog, _ ->
+            .setPositiveButton("Provide") { dialog, _ ->
                 dialog.dismiss()
                 requestPermission()
             }
-            .setNegativeButton("Отмена") { dialog, _ ->
+            .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
                 onResult(false)
             }
@@ -151,20 +151,20 @@ class PermissionManager(
     }
 
     /**
-     * Показывает диалог для перехода в настройки
+     * Shows a dialog for going to settings
      */
     private fun showPermanentlyDeniedDialog() {
         AlertDialog.Builder(activity)
-            .setTitle("Разрешение заблокировано")
+            .setTitle("Permission blocked")
             .setMessage(
-                "Вы отказали в доступе к камере. " +
-                        "Чтобы использовать камеру, предоставьте разрешение в настройках."
+                "You have denied access to the camera. " +
+                        "To use the camera, grant permission in the settings."
             )
-            .setPositiveButton("Открыть настройки") { dialog, _ ->
+            .setPositiveButton("Open settings") { dialog, _ ->
                 dialog.dismiss()
                 openAppSettings()
             }
-            .setNegativeButton("Отмена") { dialog, _ ->
+            .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
             .setCancelable(false)
@@ -172,7 +172,7 @@ class PermissionManager(
     }
 
     /**
-     * Открывает настройки приложения
+     * Opens the application settings
      */
     private fun openAppSettings() {
         try {
@@ -181,7 +181,7 @@ class PermissionManager(
             }
             activity.startActivity(intent)
         } catch (e: Exception) {
-            Log.e(TAG, "Не удалось открыть настройки", e)
+            Log.e(TAG, "Unable to open settings", e)
         }
     }
 }

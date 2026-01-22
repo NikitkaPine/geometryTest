@@ -29,15 +29,15 @@ class HistoryAdapter(private val items: List<HistoryItem>) :
     override fun onBindViewHolder(holder: HistoryViewHolder, position: Int) {
         val item = items[position]
 
-        // Загружаем изображение
+
         Glide.with(holder.itemView.context)
             .load(File(item.imagePath))
             .into(holder.image)
 
-        // Устанавливаем пример
+
         holder.example.text = item.example
 
-        // Форматируем дату
+
         val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
         holder.date.text = dateFormat.format(Date(item.timestamp))
     }
