@@ -1,59 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5">
 
-    <!-- Полотно для рисования фигур (ВЕРХНИЙ СЛОЙ) -->
-    <com.example.camera_test.ShapeCanvasView
-        android:id="@+id/shape_canvas"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#FFFFFF"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/shape_spinner"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="8dp" />
-
-    <!-- Кнопка сброса (по центру canvas) -->
-    <ImageButton
-        android:id="@+id/btn_reset"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:src="@android:drawable/ic_menu_rotate"
-        android:contentDescription="Сбросить все значения"
-        android:scaleType="fitCenter"
-        android:padding="12dp"
-        android:elevation="4dp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@+id/shape_canvas"
-        app:layout_constraintStart_toStartOf="@+id/shape_canvas"
-        app:layout_constraintEnd_toEndOf="@+id/shape_canvas"
-        android:layout_marginTop="8dp"
-        app:tint="#000000" />
-
-    <!-- Прокручиваемый контейнер для всех полей -->
+    <!-- Прокручиваемый контейнер -->
     <ScrollView
         android:id="@+id/scroll_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@+id/shape_canvas"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/shape_spinner"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:padding="8dp">
 
-            <!-- Контейнер для полей ввода СЛЕВА (стороны) -->
+            <!-- Контейнер для полей ввода СЛЕВА (синий) -->
             <LinearLayout
                 android:id="@+id/input_container_left"
                 android:layout_width="wrap_content"
@@ -63,10 +32,11 @@
                 android:background="#BBDEFB"
                 android:elevation="4dp"
                 android:visibility="gone"
-                android:layout_gravity="start"
-                android:layout_margin="8dp">
+                android:layout_margin="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-                <!-- Поле для радиуса -->
+                <!-- КРУГ -->
                 <LinearLayout
                     android:id="@+id/field_radius"
                     android:layout_width="wrap_content"
@@ -122,6 +92,7 @@
                         android:background="#FFFFFF" />
                 </LinearLayout>
 
+                <!-- КВАДРАТ -->
                 <LinearLayout
                     android:id="@+id/field_square_side"
                     android:layout_width="wrap_content"
@@ -177,6 +148,7 @@
                         android:background="#FFFFFF" />
                 </LinearLayout>
 
+                <!-- ПРЯМОУГОЛЬНИК -->
                 <LinearLayout
                     android:id="@+id/field_rect_width"
                     android:layout_width="wrap_content"
@@ -260,6 +232,7 @@
                         android:background="#FFFFFF" />
                 </LinearLayout>
 
+                <!-- РАВНОБЕДРЕННЫЙ ТРЕУГОЛЬНИК -->
                 <LinearLayout
                     android:id="@+id/field_iso_side"
                     android:layout_width="wrap_content"
@@ -315,34 +288,7 @@
                         android:background="#FFFFFF" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/field_iso_bisector"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:layout_marginTop="6dp"
-                    android:gravity="center_vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="l = "
-                        android:textSize="18sp"
-                        android:textColor="#000000"
-                        android:textStyle="bold" />
-                    <EditText
-                        android:id="@+id/input_iso_bisector"
-                        android:layout_width="100dp"
-                        android:layout_height="45dp"
-                        android:inputType="numberDecimal"
-                        android:hint="0"
-                        android:textSize="16sp"
-                        android:textColor="#000000"
-                        android:textColorHint="#999999"
-                        android:padding="8dp"
-                        android:background="#FFFFFF" />
-                </LinearLayout>
-
+                <!-- ПРЯМОУГОЛЬНЫЙ ТРЕУГОЛЬНИК -->
                 <LinearLayout
                     android:id="@+id/field_right_a"
                     android:layout_width="wrap_content"
@@ -426,37 +372,9 @@
                         android:background="#FFFFFF" />
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/field_right_bisector"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:layout_marginTop="6dp"
-                    android:gravity="center_vertical">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="l = "
-                        android:textSize="18sp"
-                        android:textColor="#000000"
-                        android:textStyle="bold" />
-                    <EditText
-                        android:id="@+id/input_right_bisector"
-                        android:layout_width="100dp"
-                        android:layout_height="45dp"
-                        android:inputType="numberDecimal"
-                        android:hint="0"
-                        android:textSize="16sp"
-                        android:textColor="#000000"
-                        android:textColorHint="#999999"
-                        android:padding="8dp"
-                        android:background="#FFFFFF" />
-                </LinearLayout>
-
             </LinearLayout>
 
-            <!-- Контейнер для углов СПРАВА -->
+            <!-- Контейнер для углов СПРАВА (красный) -->
             <LinearLayout
                 android:id="@+id/input_container_right"
                 android:layout_width="wrap_content"
@@ -466,9 +384,11 @@
                 android:background="#FFCCBC"
                 android:elevation="4dp"
                 android:visibility="gone"
-                android:layout_gravity="end"
-                android:layout_margin="8dp">
+                android:layout_margin="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
+                <!-- РАВНОБЕДРЕННЫЙ углы -->
                 <LinearLayout
                     android:id="@+id/field_iso_angle_a"
                     android:layout_width="wrap_content"
@@ -552,6 +472,7 @@
                         android:background="#FFFFFF" />
                 </LinearLayout>
 
+                <!-- ПРЯМОУГОЛЬНЫЙ углы -->
                 <LinearLayout
                     android:id="@+id/field_right_angle_a"
                     android:layout_width="wrap_content"
@@ -639,16 +560,37 @@
 
             </LinearLayout>
 
-            <!-- Контейнер для результатов (ВНИЗУ прокрутки) -->
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/barrier_bottom_inputs"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="input_container_left,input_container_right" />
+
+            <!-- Полотно для рисования фигур -->
+            <com.example.camera_test.ShapeCanvasView
+                android:id="@+id/shape_canvas"
+                android:layout_width="0dp"
+                android:layout_height="400dp"
+                android:background="#FFFFFF"
+                android:layout_margin="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_bottom_inputs"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Контейнер для результатов (зелёный) -->
             <LinearLayout
                 android:id="@+id/results_container"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="12dp"
                 android:background="#C8E6C9"
                 android:visibility="gone"
-                android:layout_margin="8dp">
+                android:layout_margin="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/shape_canvas"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -659,6 +601,7 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="8dp" />
 
+                <!-- Периметр -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -686,6 +629,7 @@
                         android:background="#FFFFFF" />
                 </LinearLayout>
 
+                <!-- Площадь -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -714,13 +658,100 @@
                         android:background="#FFFFFF" />
                 </LinearLayout>
 
+                <!-- Бисектриса равнобедренного -->
+                <LinearLayout
+                    android:id="@+id/result_iso_bisector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="l = "
+                        android:textSize="20sp"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+                    <EditText
+                        android:id="@+id/result_iso_bisector_value"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="50dp"
+                        android:inputType="numberDecimal"
+                        android:hint="0"
+                        android:textSize="18sp"
+                        android:textColor="#000000"
+                        android:textColorHint="#999999"
+                        android:textStyle="bold"
+                        android:padding="10dp"
+                        android:background="#FFFFFF"
+                        android:enabled="false" />
+                </LinearLayout>
+
+                <!-- Бисектриса прямоугольного -->
+                <LinearLayout
+                    android:id="@+id/result_right_bisector"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="l = "
+                        android:textSize="20sp"
+                        android:textColor="#000000"
+                        android:textStyle="bold" />
+                    <EditText
+                        android:id="@+id/result_right_bisector_value"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="50dp"
+                        android:inputType="numberDecimal"
+                        android:hint="0"
+                        android:textSize="18sp"
+                        android:textColor="#000000"
+                        android:textColorHint="#999999"
+                        android:textStyle="bold"
+                        android:padding="10dp"
+                        android:background="#FFFFFF"
+                        android:enabled="false" />
+                </LinearLayout>
+
+                <!-- Пустое пространство для скролла -->
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp" />
+
             </LinearLayout>
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
-    <!-- Выпадающий список (ФИКСИРОВАННЫЙ ВНИЗУ) -->
+    <!-- Кнопка сброса (ВСЕГДА ВИДНА) -->
+    <ImageButton
+        android:id="@+id/btn_reset"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@android:drawable/ic_menu_rotate"
+        android:contentDescription="Сбросить все значения"
+        android:scaleType="fitCenter"
+        android:padding="12dp"
+        android:elevation="16dp"
+        android:visibility="gone"
+        app:tint="#000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Выпадающий список (ВСЕГДА ВИДИМ ВНИЗУ) -->
     <Spinner
         android:id="@+id/shape_spinner"
         android:layout_width="0dp"
@@ -729,6 +760,7 @@
         android:padding="12dp"
         android:background="@android:drawable/btn_dropdown"
         android:spinnerMode="dropdown"
+        android:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

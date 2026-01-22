@@ -1,3 +1,4 @@
+// ShapeCanvasView.kt
 package com.example.camera_test
 
 import android.content.Context
@@ -8,7 +9,6 @@ import android.graphics.Path
 import android.util.AttributeSet
 import android.view.View
 import kotlin.math.min
-import kotlin.math.sqrt
 
 class ShapeCanvasView @JvmOverloads constructor(
     context: Context,
