@@ -91,6 +91,10 @@ class ShapeCanvasView @JvmOverloads constructor(
 
         canvas.drawRect(left, top, right, bottom, linePaint)
 
+        // Диагонали
+        canvas.drawLine(left, top, right, bottom, thinLinePaint)
+        canvas.drawLine(right, top, left, bottom, thinLinePaint)
+
         drawEqualMark(canvas, cx, top, true)
         drawEqualMark(canvas, cx, bottom, true)
         drawEqualMark(canvas, left, cy, false)
@@ -101,6 +105,7 @@ class ShapeCanvasView @JvmOverloads constructor(
         canvas.drawText("C", right + 30, bottom + 45, textPaint)
         canvas.drawText("D", left - 30, bottom + 45, textPaint)
         canvas.drawText("a", cx, top - 20, smallTextPaint)
+        canvas.drawText("d", cx + 15, cy - 15, smallTextPaint)
     }
 
     private fun drawRectangleWithLabels(canvas: Canvas, cx: Float, cy: Float, size: Float) {
@@ -114,6 +119,10 @@ class ShapeCanvasView @JvmOverloads constructor(
 
         canvas.drawRect(left, top, right, bottom, linePaint)
 
+        // Диагонали
+        canvas.drawLine(left, top, right, bottom, thinLinePaint)
+        canvas.drawLine(right, top, left, bottom, thinLinePaint)
+
         drawEqualMark(canvas, cx, top, true)
         drawEqualMark(canvas, cx, bottom, true)
         drawDoubleMark(canvas, left, cy, false)
@@ -125,6 +134,7 @@ class ShapeCanvasView @JvmOverloads constructor(
         canvas.drawText("D", left - 30, bottom + 45, textPaint)
         canvas.drawText("a", cx, top - 20, smallTextPaint)
         canvas.drawText("b", right + 35, cy, smallTextPaint)
+        canvas.drawText("d", cx + 15, cy - 15, smallTextPaint)
     }
 
     private fun drawIsoscelesTriangleWithLabels(canvas: Canvas, cx: Float, cy: Float, size: Float) {
@@ -146,6 +156,11 @@ class ShapeCanvasView @JvmOverloads constructor(
         path.close()
 
         canvas.drawPath(path, linePaint)
+
+        // Бисектриса от вершины A к основанию (она же высота и медиана)
+        val baseMidX = (leftX + rightX) / 2
+        val baseMidY = (leftY + rightY) / 2
+        canvas.drawLine(topX, topY, baseMidX, baseMidY, thinLinePaint)
 
         // Отмечаем равные боковые стороны (одна черточка на каждой)
         val leftMidX = (topX + leftX) / 2
@@ -203,6 +218,7 @@ class ShapeCanvasView @JvmOverloads constructor(
         canvas.drawText("a", leftMidX - 25, leftMidY, smallTextPaint)
         canvas.drawText("a", rightMidX + 25, rightMidY, smallTextPaint)
         canvas.drawText("b", cx, leftY + 30, smallTextPaint)
+        canvas.drawText("l", cx - 20, (topY + baseMidY) / 2, smallTextPaint)
     }
 
     private fun drawRightTriangleWithLabels(canvas: Canvas, cx: Float, cy: Float, size: Float) {
@@ -219,6 +235,11 @@ class ShapeCanvasView @JvmOverloads constructor(
         path.close()
 
         canvas.drawPath(path, linePaint)
+
+        // Бисектриса от прямого угла B к гипотенузе
+        val hypMidX = (leftX + rightX) / 2
+        val hypMidY = (topY + bottomY) / 2
+        canvas.drawLine(leftX, bottomY, hypMidX, hypMidY, thinLinePaint)
 
         // Квадратик прямого угла
         val squareSize = 25f
@@ -238,9 +259,8 @@ class ShapeCanvasView @JvmOverloads constructor(
         // Обозначение сторон
         canvas.drawText("a", leftX - 35, (topY + bottomY) / 2, smallTextPaint)
         canvas.drawText("b", (leftX + rightX) / 2, bottomY + 30, smallTextPaint)
-        val hypMidX = (leftX + rightX) / 2
-        val hypMidY = (topY + bottomY) / 2
         canvas.drawText("c", hypMidX + 30, hypMidY, smallTextPaint)
+        canvas.drawText("l", (leftX + hypMidX) / 2 + 15, (bottomY + hypMidY) / 2, smallTextPaint)
     }
 
     private fun drawEqualMark(canvas: Canvas, x: Float, y: Float, horizontal: Boolean) {
