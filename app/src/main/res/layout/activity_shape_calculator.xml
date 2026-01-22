@@ -380,7 +380,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="12dp"
+                android:padding="8dp"
                 android:background="#FFCCBC"
                 android:elevation="4dp"
                 android:visibility="gone"
@@ -567,6 +567,20 @@
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="input_container_left,input_container_right" />
 
+            <!-- Уведомление об ошибке -->
+            <TextView
+                android:id="@+id/tv_error"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Фигура невозможна"
+                android:textColor="#FF0000"
+                android:textSize="18sp"
+                android:gravity="center"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/barrier_bottom_inputs"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <!-- Полотно для рисования фигур -->
             <com.example.camera_test.ShapeCanvasView
                 android:id="@+id/shape_canvas"
@@ -574,7 +588,7 @@
                 android:layout_height="400dp"
                 android:background="#FFFFFF"
                 android:layout_margin="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/barrier_bottom_inputs"
+                app:layout_constraintTop_toBottomOf="@+id/tv_error"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -686,8 +700,7 @@
                         android:textColorHint="#999999"
                         android:textStyle="bold"
                         android:padding="10dp"
-                        android:background="#FFFFFF"
-                        android:enabled="false" />
+                        android:background="#FFFFFF" />
                 </LinearLayout>
 
                 <!-- Бисектриса прямоугольного -->
@@ -718,8 +731,7 @@
                         android:textColorHint="#999999"
                         android:textStyle="bold"
                         android:padding="10dp"
-                        android:background="#FFFFFF"
-                        android:enabled="false" />
+                        android:background="#FFFFFF" />
                 </LinearLayout>
 
                 <!-- Пустое пространство для скролла -->
@@ -747,9 +759,9 @@
         android:visibility="gone"
         app:tint="#000000"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp" />
+        android:layout_marginTop="8dp" />
 
     <!-- Выпадающий список (ВСЕГДА ВИДИМ ВНИЗУ) -->
     <Spinner

@@ -4,6 +4,7 @@ package com.example.camera_test.shapes
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.math.abs
@@ -14,7 +15,8 @@ class SquareHandler(
     private val inputSquareSide: EditText,
     private val inputSquareDiagonal: EditText,
     private val inputPerimeter: EditText,
-    private val inputArea: EditText
+    private val inputArea: EditText,
+    private val tvError: TextView
 ) : ShapeHandler {
 
     override fun showFields() {
@@ -23,6 +25,8 @@ class SquareHandler(
     }
 
     override fun calculate() {
+        tvError.visibility = View.GONE
+
         val a = inputSquareSide.text.toString().toDoubleOrNull()
         val d = inputSquareDiagonal.text.toString().toDoubleOrNull()
         val p = inputPerimeter.text.toString().toDoubleOrNull()

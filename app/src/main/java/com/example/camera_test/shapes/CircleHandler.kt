@@ -4,6 +4,7 @@ package com.example.camera_test.shapes
 import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -15,7 +16,8 @@ class CircleHandler(
     private val inputRadius: EditText,
     private val inputDiameter: EditText,
     private val inputPerimeter: EditText,
-    private val inputArea: EditText
+    private val inputArea: EditText,
+    private val tvError: TextView
 ) : ShapeHandler {
 
     override fun showFields() {
@@ -24,6 +26,8 @@ class CircleHandler(
     }
 
     override fun calculate() {
+        tvError.visibility = View.GONE
+
         val r = inputRadius.text.toString().toDoubleOrNull()
         val d = inputDiameter.text.toString().toDoubleOrNull()
         val p = inputPerimeter.text.toString().toDoubleOrNull()

@@ -2,6 +2,7 @@
 package com.example.camera_test.shapes
 
 import android.widget.EditText
+import android.widget.TextView
 
 interface ShapeHandler {
     fun showFields()

@@ -1,4 +1,3 @@
-
 // ShapeCalculatorActivity.kt
 package com.example.camera_test
 
@@ -13,6 +12,7 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.Spinner
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.camera_test.shapes.CircleHandler
 import com.example.camera_test.shapes.IsoscelesTriangleHandler
@@ -30,6 +30,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
     private lateinit var inputContainerRight: LinearLayout
     private lateinit var resultsContainer: LinearLayout
     private lateinit var btnReset: ImageButton
+    private lateinit var tvError: TextView
 
     private var currentShapeType: ShapeType = ShapeType.NONE
     private var isCalculating = false
@@ -111,6 +112,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         inputContainerRight = findViewById(R.id.input_container_right)
         resultsContainer = findViewById(R.id.results_container)
         btnReset = findViewById(R.id.btn_reset)
+        tvError = findViewById(R.id.tv_error)
 
         inputRadius = findViewById(R.id.input_radius)
         inputDiameter = findViewById(R.id.input_diameter)
@@ -162,25 +164,25 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         handlers = mapOf<ShapeType, ShapeHandler>(
             ShapeType.CIRCLE to CircleHandler(
                 fieldRadius, fieldDiameter, inputRadius, inputDiameter,
-                inputPerimeter, inputArea
+                inputPerimeter, inputArea, tvError
             ),
             ShapeType.SQUARE to SquareHandler(
                 fieldSquareSide, fieldSquareDiagonal, inputSquareSide, inputSquareDiagonal,
-                inputPerimeter, inputArea
+                inputPerimeter, inputArea, tvError
             ),
             ShapeType.RECTANGLE to RectangleHandler(
                 fieldRectWidth, fieldRectHeight, fieldRectDiagonal, inputRectWidth, inputRectHeight, inputRectDiagonal,
-                inputPerimeter, inputArea
+                inputPerimeter, inputArea, tvError
             ),
             ShapeType.ISOSCELES_TRIANGLE to IsoscelesTriangleHandler(
                 fieldIsoSide, fieldIsoBase, fieldIsoAngleA, fieldIsoAngleB, fieldIsoAngleC,
                 inputIsoSide, inputIsoBase, inputIsoAngleA, inputIsoAngleB, inputIsoAngleC,
-                inputPerimeter, inputArea, resultIsoBisectorValue
+                inputPerimeter, inputArea, resultIsoBisectorValue, tvError
             ),
             ShapeType.RIGHT_TRIANGLE to RightTriangleHandler(
                 fieldRightA, fieldRightB, fieldRightC, fieldRightAngleA, fieldRightAngleB, fieldRightAngleC,
                 inputRightA, inputRightB, inputRightC, inputRightAngleA, inputRightAngleB, inputRightAngleC,
-                inputPerimeter, inputArea, resultRightBisectorValue
+                inputPerimeter, inputArea, resultRightBisectorValue, tvError
             )
         )
     }
@@ -217,6 +219,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                     resultRightBisector.visibility = if (newType == ShapeType.RIGHT_TRIANGLE) View.VISIBLE else View.GONE
                     btnReset.visibility = if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
                     shapeCanvas.setShape(currentShapeType)
+                    tvError.visibility = View.GONE
                 }
             }
 
@@ -244,7 +247,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
             inputRectWidth, inputRectHeight, inputRectDiagonal,
             inputIsoSide, inputIsoBase, inputIsoAngleA, inputIsoAngleB, inputIsoAngleC,
             inputRightA, inputRightB, inputRightC, inputRightAngleA, inputRightAngleC,
-            inputPerimeter, inputArea
+            inputPerimeter, inputArea, resultIsoBisectorValue, resultRightBisectorValue
         ).forEach { it.addTextChangedListener(textWatcher) }
     }
 
@@ -267,6 +270,8 @@ class ShapeCalculatorActivity : AppCompatActivity() {
             inputRightAngleB.setText("90")
         }
 
+        tvError.visibility = View.GONE
+
         android.widget.Toast.makeText(this, "Все значения сброшены", android.widget.Toast.LENGTH_SHORT).show()
     }
 
@@ -277,6 +282,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         resultIsoBisector.visibility = View.GONE
         resultRightBisector.visibility = View.GONE
         btnReset.visibility = View.GONE
+        tvError.visibility = View.GONE
 
         listOf(
             fieldRadius, fieldDiameter, fieldSquareSide, fieldSquareDiagonal,
