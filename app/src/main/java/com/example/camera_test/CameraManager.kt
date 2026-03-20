@@ -19,40 +19,40 @@ import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-/**
- * Manager for working with CameraX
- * Controls preview and photo capture
- */
+// Менеджер камеры на базе CameraX.
+// Отвечает за предпросмотр (что видит пользователь) и съёмку фото.
 class CameraManager(
     private val context: Context,
-    private val lifecycleOwner: LifecycleOwner,
-    private val previewView: PreviewView
+    private val lifecycleOwner: LifecycleOwner, // нужен CameraX, чтобы знать, когда Activity жива
+    private val previewView: PreviewView         // View, куда выводится изображение с камеры
 ) {
 
-    // Executor for background camera operations
+    // Отдельный поток для тяжёлых операций камеры, чтобы не тормозить UI
     private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
 
-    // ImageCapture for capturing photos
+    // UseCase для съёмки фото — создаётся при старте камеры
     private var imageCapture: ImageCapture? = null
 
-    // Camera status flag
+    // Флаг: камера уже запущена (чтобы не запускать дважды)
     private var isCameraStarted = false
 
     companion object {
         private const val TAG = "CameraManager"
+        // Формат имени файла — включает дату и время до миллисекунд
         private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
     }
 
     /**
-     * Callback for photo capture results
+     * Колбэк результата съёмки.
      */
     interface PhotoCaptureCallback {
-        fun onPhotoSaved(uri: Uri)
-        fun onError(exception: Exception)
+        fun onPhotoSaved(uri: Uri)       // Фото успешно сохранено
+        fun onError(exception: Exception) // Что-то пошло не так
     }
 
     /**
-     * Starts the camera (Preview + ImageCapture)
+     * Запускает камеру: создаёт Preview и ImageCapture, привязывает к жизненному циклу.
+     * Если камера уже запущена — просто выходим.
      */
     fun startCamera() {
         if (isCameraStarted) {
@@ -60,9 +60,11 @@ class CameraManager(
             return
         }
 
+        // Асинхронно получаем экземпляр ProcessCameraProvider
         val cameraProviderFuture: ListenableFuture<ProcessCameraProvider> =
             ProcessCameraProvider.getInstance(context)
 
+        // Когда провайдер готов — привязываем к нему UseCase'ы
         cameraProviderFuture.addListener({
             try {
                 val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
@@ -73,33 +75,32 @@ class CameraManager(
                 Log.e(TAG, "Error when starting the camera", e)
                 showToast("Camera error: ${e.message}")
             }
-        }, ContextCompat.getMainExecutor(context))
+        }, ContextCompat.getMainExecutor(context)) // Выполняем на главном потоке
     }
 
     /**
-     * Links Use Cases to the camera
+     * Привязывает UseCase'ы к провайдеру и жизненному циклу.
+     * UseCase — это роль, которую мы назначаем камере: предпросмотр, съёмка и т.д.
      */
     private fun bindCamera(cameraProvider: ProcessCameraProvider) {
         try {
-            // 1. Create a Preview Use Case
-            val preview = Preview.Builder()
-                .build()
-                .also {
+            // 1. Preview — то, что пользователь видит на экране в реальном времени
+            val preview = Preview.Builder().build().also {
                     it.setSurfaceProvider(previewView.surfaceProvider)
                 }
 
-            // 2. Create ImageCapture Use Case
+            // 2. ImageCapture — UseCase для сохранения фото на диск
             imageCapture = ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY) // максимальное качество
                 .build()
 
-            // 3. Select the rear camera
+            // 3. Выбираем заднюю камеру
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
-            // 4. Untie previous use cases
+            // 4. Сначала отвязываем все старые UseCase'ы — на случай повторного вызова
             cameraProvider.unbindAll()
 
-            // 5. Bind to lifecycle
+            // 5. Привязываем Preview и ImageCapture к жизненному циклу Activity
             cameraProvider.bindToLifecycle(
                 lifecycleOwner,
                 cameraSelector,
@@ -116,37 +117,40 @@ class CameraManager(
     }
 
     /**
-     * Takes a photo and saves it to the application folder.
+     * Делает снимок и сохраняет его в папку temp_photos внутреннего хранилища.
+     * Результат возвращается через колбэк.
      */
     fun takePhoto(callback: PhotoCaptureCallback) {
-        // Checking ImageCapture readiness
+        // Если ImageCapture ещё не готов — ничего не делаем
         val imageCapture = imageCapture ?: run {
             showToast("The camera is not ready yet.")
             callback.onError(Exception("ImageCapture is not initialized"))
             return
         }
 
-        // Create a folder for temporary photos
+        // Создаём папку для временных фото, если её нет
         val photoDir = File(context.filesDir, "temp_photos")
         if (!photoDir.exists()) {
             photoDir.mkdirs()
         }
 
-        // Create a file name with a timestamp
+        // Имя файла содержит временную метку — каждый раз уникальное
         val timestamp = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
             .format(System.currentTimeMillis())
         val photoFile = File(photoDir, "photo_$timestamp.jpg")
 
-        // Create OutputFileOptions to save to file
+        // Говорим CameraX, куда сохранить файл
         val outputOptions = ImageCapture.OutputFileOptions
             .Builder(photoFile)
             .build()
 
-        // Taking photos
+        // Запускаем съёмку — выполняется в cameraExecutor (фоновый поток)
         imageCapture.takePicture(
             outputOptions,
             cameraExecutor,
             object : ImageCapture.OnImageSavedCallback {
+
+                // Ошибка при сохранении — уведомляем через колбэк
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Error saving photo: ${exc.message}", exc)
                     runOnMainThread {
@@ -155,17 +159,15 @@ class CameraManager(
                     }
                 }
 
+                // Фото успешно сохранено — передаём Uri и мигаем экраном
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    // Get the file URI
                     val savedUri = Uri.fromFile(photoFile)
                     Log.d(TAG, "Photo saved: $savedUri")
 
                     runOnMainThread {
                         showToast("The photo is taken!")
                         callback.onPhotoSaved(savedUri)
-
-
-                        flashScreen()
+                        flashScreen() // Визуальный отклик — экран на миг белеет
                     }
                 }
             }
@@ -173,7 +175,8 @@ class CameraManager(
     }
 
     /**
-     * Visual screen flash
+     * Делает экран белым на 50 мс — имитация вспышки при съёмке.
+     * Используем foreground PreviewView: накладываем белый цвет, потом убираем.
      */
     private fun flashScreen() {
         previewView.postDelayed({
@@ -188,12 +191,13 @@ class CameraManager(
     }
 
     /**
-     * Checks whether the camera is running
+     * Возвращает true, если камера уже запущена.
      */
     fun isCameraRunning(): Boolean = isCameraStarted
 
     /**
-     * Frees resources
+     * Освобождает ресурсы: останавливает фоновый поток.
+     * Нужно вызывать в onDestroy Activity.
      */
     fun release() {
         cameraExecutor.shutdown()
@@ -201,14 +205,16 @@ class CameraManager(
     }
 
     /**
-     * Helper function for displaying Toast
+     * Показывает короткое всплывающее сообщение.
      */
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 
     /**
-     * Auxiliary function to be executed in the main thread
+     * Переключает выполнение кода на главный поток.
+     * Нужно, потому что колбэки CameraX приходят в фоновом потоке,
+     * а UI можно трогать только из главного.
      */
     private fun runOnMainThread(action: () -> Unit) {
         ContextCompat.getMainExecutor(context).execute(action)

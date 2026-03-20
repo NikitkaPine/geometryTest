@@ -1,66 +1,67 @@
-// ShapeCalculatorActivity.kt
 package com.example.camera_test
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.Spinner
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import com.example.camera_test.shapes.CircleHandler
-import com.example.camera_test.shapes.IsoscelesTriangleHandler
-import com.example.camera_test.shapes.RectangleHandler
-import com.example.camera_test.shapes.RightTriangleHandler
-import com.example.camera_test.shapes.ShapeHandler
-import com.example.camera_test.shapes.SquareHandler
 import android.view.ViewGroup
-import android.graphics.Color
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import com.example.camera_test.shapes.*
 
-
+// Экран калькулятора геометрических фигур
+// Пользователь выбирает фигуру, вводит параметры — всё остальное считается автоматически
 class ShapeCalculatorActivity : AppCompatActivity() {
 
+    // Холст для рисования выбранной фигуры
     private lateinit var shapeCanvas: ShapeCanvasView
+    // Выпадающий список с выбором фигуры
     private lateinit var shapeSpinner: Spinner
     private lateinit var scrollContainer: ScrollView
+    // Левая колонка полей ввода (основные параметры)
     private lateinit var inputContainerLeft: LinearLayout
+    // Правая колонка (углы — только у треугольников)
     private lateinit var inputContainerRight: LinearLayout
+    // Блок с результатами (периметр, площадь и т.д.)
     private lateinit var resultsContainer: LinearLayout
+    // Кнопка сброса всех полей
     private lateinit var btnReset: ImageButton
+    // Поле для вывода ошибок
     private lateinit var tvError: TextView
 
+    // Текущая выбранная фигура
     private var currentShapeType: ShapeType = ShapeType.NONE
+    // Флаг — идёт ли сейчас пересчёт (чтобы не зациклиться)
     private var isCalculating = false
+    // Обработчик текущей фигуры — знает, как считать именно её
     private var currentHandler: ShapeHandler? = null
+    // Все обработчики фигур, заготовленные заранее
     private lateinit var handlers: Map<ShapeType, ShapeHandler>
 
-    // Parameter input fields - Circle
+    // --- Поля ввода для каждой фигуры ---
+
+    // Круг
     private lateinit var inputRadius: EditText
     private lateinit var inputDiameter: EditText
 
-    // Parameter input fields - Square
+    // Квадрат
     private lateinit var inputSquareSide: EditText
     private lateinit var inputSquareDiagonal: EditText
 
-    // Parameter input fields - Rectangle
+    // Прямоугольник
     private lateinit var inputRectWidth: EditText
     private lateinit var inputRectHeight: EditText
     private lateinit var inputRectDiagonal: EditText
 
-    // Parameter input fields - Isosceles triangle
+    // Равнобедренный треугольник
     private lateinit var inputIsoSide: EditText
     private lateinit var inputIsoBase: EditText
     private lateinit var inputIsoAngleA: EditText
     private lateinit var inputIsoAngleB: EditText
     private lateinit var inputIsoAngleC: EditText
 
-    // Parameter input fields - Right-angled triangle
+    // Прямоугольный треугольник
     private lateinit var inputRightA: EditText
     private lateinit var inputRightB: EditText
     private lateinit var inputRightC: EditText
@@ -68,13 +69,13 @@ class ShapeCalculatorActivity : AppCompatActivity() {
     private lateinit var inputRightAngleB: EditText
     private lateinit var inputRightAngleC: EditText
 
-    // Result fields
+    // --- Поля результатов ---
     private lateinit var inputPerimeter: EditText
     private lateinit var inputArea: EditText
-    private lateinit var resultIsoBisectorValue: EditText
-    private lateinit var resultRightBisectorValue: EditText
+    private lateinit var resultIsoBisectorValue: EditText   // Биссектриса равнобедренного
+    private lateinit var resultRightBisectorValue: EditText // Биссектриса прямоугольного
 
-    // Field containers
+    // --- Контейнеры-обёртки для каждого поля (нужны для show/hide) ---
     private lateinit var fieldRadius: LinearLayout
     private lateinit var fieldDiameter: LinearLayout
     private lateinit var fieldSquareSide: LinearLayout
@@ -96,75 +97,86 @@ class ShapeCalculatorActivity : AppCompatActivity() {
     private lateinit var resultIsoBisector: LinearLayout
     private lateinit var resultRightBisector: LinearLayout
 
+    // Вызывается при создании экрана
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shape_calculator)
 
-        initViews()
-        initHandlers()
-        setupSpinner()
-        setupAutoCalculation()
-        setupResetButton()
+        initViews()            // Привязываем все View по id
+        initHandlers()         // Создаём обработчики для каждой фигуры
+        setupSpinner()         // Настраиваем выпадающий список фигур
+        setupAutoCalculation() // Вешаем слушатели на поля — пересчёт на лету
+        setupResetButton()     // Настраиваем кнопку сброса
     }
 
+    /**
+     * Находим все элементы интерфейса по их id из XML-разметки.
+     */
     private fun initViews() {
-        shapeCanvas = findViewById(R.id.shape_canvas)
-        shapeSpinner = findViewById(R.id.shape_spinner)
-        scrollContainer = findViewById(R.id.scroll_container)
-        inputContainerLeft = findViewById(R.id.input_container_left)
+        shapeCanvas         = findViewById(R.id.shape_canvas)
+        shapeSpinner        = findViewById(R.id.shape_spinner)
+        scrollContainer     = findViewById(R.id.scroll_container)
+        inputContainerLeft  = findViewById(R.id.input_container_left)
         inputContainerRight = findViewById(R.id.input_container_right)
-        resultsContainer = findViewById(R.id.results_container)
-        btnReset = findViewById(R.id.btn_reset)
-        tvError = findViewById(R.id.tv_error)
+        resultsContainer    = findViewById(R.id.results_container)
+        btnReset            = findViewById(R.id.btn_reset)
+        tvError             = findViewById(R.id.tv_error)
 
-        inputRadius = findViewById(R.id.input_radius)
-        inputDiameter = findViewById(R.id.input_diameter)
-        inputSquareSide = findViewById(R.id.input_square_side)
+        // Поля ввода
+        inputRadius         = findViewById(R.id.input_radius)
+        inputDiameter       = findViewById(R.id.input_diameter)
+        inputSquareSide     = findViewById(R.id.input_square_side)
         inputSquareDiagonal = findViewById(R.id.input_square_diagonal)
-        inputRectWidth = findViewById(R.id.input_rect_width)
-        inputRectHeight = findViewById(R.id.input_rect_height)
-        inputRectDiagonal = findViewById(R.id.input_rect_diagonal)
-        inputIsoSide = findViewById(R.id.input_iso_side)
-        inputIsoBase = findViewById(R.id.input_iso_base)
-        inputIsoAngleA = findViewById(R.id.input_iso_angle_a)
-        inputIsoAngleB = findViewById(R.id.input_iso_angle_b)
-        inputIsoAngleC = findViewById(R.id.input_iso_angle_c)
-        inputRightA = findViewById(R.id.input_right_a)
-        inputRightB = findViewById(R.id.input_right_b)
-        inputRightC = findViewById(R.id.input_right_c)
-        inputRightAngleA = findViewById(R.id.input_right_angle_a)
-        inputRightAngleB = findViewById(R.id.input_right_angle_b)
-        inputRightAngleC = findViewById(R.id.input_right_angle_c)
+        inputRectWidth      = findViewById(R.id.input_rect_width)
+        inputRectHeight     = findViewById(R.id.input_rect_height)
+        inputRectDiagonal   = findViewById(R.id.input_rect_diagonal)
+        inputIsoSide        = findViewById(R.id.input_iso_side)
+        inputIsoBase        = findViewById(R.id.input_iso_base)
+        inputIsoAngleA      = findViewById(R.id.input_iso_angle_a)
+        inputIsoAngleB      = findViewById(R.id.input_iso_angle_b)
+        inputIsoAngleC      = findViewById(R.id.input_iso_angle_c)
+        inputRightA         = findViewById(R.id.input_right_a)
+        inputRightB         = findViewById(R.id.input_right_b)
+        inputRightC         = findViewById(R.id.input_right_c)
+        inputRightAngleA    = findViewById(R.id.input_right_angle_a)
+        inputRightAngleB    = findViewById(R.id.input_right_angle_b)
+        inputRightAngleC    = findViewById(R.id.input_right_angle_c)
 
-        inputPerimeter = findViewById(R.id.input_perimeter)
-        inputArea = findViewById(R.id.input_area)
-        resultIsoBisectorValue = findViewById(R.id.result_iso_bisector_value)
+        // Поля результатов
+        inputPerimeter           = findViewById(R.id.input_perimeter)
+        inputArea                = findViewById(R.id.input_area)
+        resultIsoBisectorValue   = findViewById(R.id.result_iso_bisector_value)
         resultRightBisectorValue = findViewById(R.id.result_right_bisector_value)
 
-        fieldRadius = findViewById(R.id.field_radius)
-        fieldDiameter = findViewById(R.id.field_diameter)
-        fieldSquareSide = findViewById(R.id.field_square_side)
+        // Контейнеры-обёртки
+        fieldRadius      = findViewById(R.id.field_radius)
+        fieldDiameter    = findViewById(R.id.field_diameter)
+        fieldSquareSide  = findViewById(R.id.field_square_side)
         fieldSquareDiagonal = findViewById(R.id.field_square_diagonal)
-        fieldRectWidth = findViewById(R.id.field_rect_width)
-        fieldRectHeight = findViewById(R.id.field_rect_height)
+        fieldRectWidth   = findViewById(R.id.field_rect_width)
+        fieldRectHeight  = findViewById(R.id.field_rect_height)
         fieldRectDiagonal = findViewById(R.id.field_rect_diagonal)
-        fieldIsoSide = findViewById(R.id.field_iso_side)
-        fieldIsoBase = findViewById(R.id.field_iso_base)
-        fieldIsoAngleA = findViewById(R.id.field_iso_angle_a)
-        fieldIsoAngleB = findViewById(R.id.field_iso_angle_b)
-        fieldIsoAngleC = findViewById(R.id.field_iso_angle_c)
-        fieldRightA = findViewById(R.id.field_right_a)
-        fieldRightB = findViewById(R.id.field_right_b)
-        fieldRightC = findViewById(R.id.field_right_c)
+        fieldIsoSide     = findViewById(R.id.field_iso_side)
+        fieldIsoBase     = findViewById(R.id.field_iso_base)
+        fieldIsoAngleA   = findViewById(R.id.field_iso_angle_a)
+        fieldIsoAngleB   = findViewById(R.id.field_iso_angle_b)
+        fieldIsoAngleC   = findViewById(R.id.field_iso_angle_c)
+        fieldRightA      = findViewById(R.id.field_right_a)
+        fieldRightB      = findViewById(R.id.field_right_b)
+        fieldRightC      = findViewById(R.id.field_right_c)
         fieldRightAngleA = findViewById(R.id.field_right_angle_a)
         fieldRightAngleB = findViewById(R.id.field_right_angle_b)
         fieldRightAngleC = findViewById(R.id.field_right_angle_c)
-        resultIsoBisector = findViewById(R.id.result_iso_bisector)
+        resultIsoBisector  = findViewById(R.id.result_iso_bisector)
         resultRightBisector = findViewById(R.id.result_right_bisector)
     }
 
+    /**
+     * Создаём по одному обработчику для каждой фигуры.
+     * Каждый обработчик знает свои поля и умеет считать параметры своей фигуры.
+     */
     private fun initHandlers() {
-        handlers = mapOf<ShapeType, ShapeHandler>(
+        handlers = mapOf(
             ShapeType.CIRCLE to CircleHandler(
                 fieldRadius, fieldDiameter, inputRadius, inputDiameter,
                 inputPerimeter, inputArea, tvError
@@ -174,7 +186,8 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 inputPerimeter, inputArea, tvError
             ),
             ShapeType.RECTANGLE to RectangleHandler(
-                fieldRectWidth, fieldRectHeight, fieldRectDiagonal, inputRectWidth, inputRectHeight, inputRectDiagonal,
+                fieldRectWidth, fieldRectHeight, fieldRectDiagonal,
+                inputRectWidth, inputRectHeight, inputRectDiagonal,
                 inputPerimeter, inputArea, tvError
             ),
             ShapeType.ISOSCELES_TRIANGLE to IsoscelesTriangleHandler(
@@ -183,23 +196,28 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                 inputPerimeter, inputArea, resultIsoBisectorValue, tvError
             ),
             ShapeType.RIGHT_TRIANGLE to RightTriangleHandler(
-                fieldRightA, fieldRightB, fieldRightC, fieldRightAngleA, fieldRightAngleB, fieldRightAngleC,
-                inputRightA, inputRightB, inputRightC, inputRightAngleA, inputRightAngleB, inputRightAngleC,
+                fieldRightA, fieldRightB, fieldRightC,
+                fieldRightAngleA, fieldRightAngleB, fieldRightAngleC,
+                inputRightA, inputRightB, inputRightC,
+                inputRightAngleA, inputRightAngleB, inputRightAngleC,
                 inputPerimeter, inputArea, resultRightBisectorValue, tvError
             )
         )
     }
 
+    /**
+     * Настраиваем спиннер (выпадающий список) с названиями фигур.
+     * При выборе фигуры скрываем старые поля и показываем нужные для новой.
+     */
     private fun setupSpinner() {
         val shapes = arrayOf(
-            "Select a shape", "Circle", "Square", "Rectangle",
+            "Выберите фигуру", "Circle", "Square", "Rectangle",
             "Isosceles triangle", "Right-angled triangle"
         )
 
+        // Кастомный адаптер — красим текст в чёрный, чтобы он был виден на любом фоне
         val adapter = object : ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_spinner_item,
-            shapes
+            this, android.R.layout.simple_spinner_item, shapes
         ) {
             override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
                 val view = super.getView(position, convertView, parent) as TextView
@@ -221,6 +239,9 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         shapeSpinner.adapter = adapter
 
         shapeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+            // Пользователь выбрал фигуру из списка
+
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val newType = when (position) {
                     1 -> ShapeType.CIRCLE
@@ -231,15 +252,18 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                     else -> ShapeType.NONE
                 }
 
+                // Перерисовываем UI только если фигура действительно изменилась
                 if (newType != currentShapeType) {
-                    hideAllFields()
+                    hideAllFields()            // Сначала прячем всё
                     currentShapeType = newType
                     currentHandler = handlers[newType]
-                    currentHandler?.showFields()
+                    currentHandler?.showFields() // Показываем только поля для этой фигуры
 
+                    // Показываем/скрываем колонки ввода в зависимости от фигуры
                     inputContainerLeft.visibility =
                         if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
 
+                    // Правая колонка (углы) нужна только треугольникам
                     inputContainerRight.visibility =
                         if (newType == ShapeType.ISOSCELES_TRIANGLE || newType == ShapeType.RIGHT_TRIANGLE)
                             View.VISIBLE else View.GONE
@@ -247,6 +271,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                     resultsContainer.visibility =
                         if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
 
+                    // Строка с биссектрисой — только для нужного треугольника
                     resultIsoBisector.visibility =
                         if (newType == ShapeType.ISOSCELES_TRIANGLE) View.VISIBLE else View.GONE
 
@@ -256,7 +281,7 @@ class ShapeCalculatorActivity : AppCompatActivity() {
                     btnReset.visibility =
                         if (newType != ShapeType.NONE) View.VISIBLE else View.GONE
 
-                    shapeCanvas.setShape(currentShapeType)
+                    shapeCanvas.setShape(currentShapeType) // Обновляем рисунок фигуры
                     tvError.visibility = View.GONE
                 }
             }
@@ -267,7 +292,12 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     * Вешаем TextWatcher на все поля ввода.
+     * Как только пользователь что-то вводит — сразу запускается пересчёт.
+     * Флаг isCalculating защищает от бесконечного цикла:
+     * пересчёт меняет поля → TextWatcher снова сработал бы → снова пересчёт...
+     */
     private fun setupAutoCalculation() {
         val textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -275,12 +305,13 @@ class ShapeCalculatorActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 if (!isCalculating) {
                     isCalculating = true
-                    currentHandler?.calculate()
+                    currentHandler?.calculate() // Запускаем расчёт текущей фигуры
                     isCalculating = false
                 }
             }
         }
 
+        // Подписываем watcher на все поля
         listOf(
             inputRadius, inputDiameter, inputSquareSide, inputSquareDiagonal,
             inputRectWidth, inputRectHeight, inputRectDiagonal,
@@ -290,12 +321,19 @@ class ShapeCalculatorActivity : AppCompatActivity() {
         ).forEach { it.addTextChangedListener(textWatcher) }
     }
 
+    /**
+     * Кнопка сброса — привязываем к ней очистку всех полей.
+     */
     private fun setupResetButton() {
         btnReset.setOnClickListener {
             resetAllFields()
         }
     }
 
+    /**
+     * Очищаем все поля ввода и результатов.
+     * Для прямоугольного треугольника угол B = 90° — восстанавливаем его сразу.
+     */
     private fun resetAllFields() {
         listOf(
             inputRadius, inputDiameter, inputSquareSide, inputSquareDiagonal,
@@ -305,23 +343,27 @@ class ShapeCalculatorActivity : AppCompatActivity() {
             inputPerimeter, inputArea, resultIsoBisectorValue, resultRightBisectorValue
         ).forEach { it.setText("") }
 
+        // Угол 90° у прямоугольного треугольника — фиксированный, возвращаем его
         if (currentShapeType == ShapeType.RIGHT_TRIANGLE) {
             inputRightAngleB.setText("90")
         }
 
         tvError.visibility = View.GONE
-
-        android.widget.Toast.makeText(this, "All values reset", android.widget.Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "All values reset", Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Прячем вообще все поля и контейнеры.
+     * Вызывается перед показом полей новой фигуры, чтобы не мешались старые.
+     */
     private fun hideAllFields() {
-        inputContainerLeft.visibility = View.GONE
+        inputContainerLeft.visibility  = View.GONE
         inputContainerRight.visibility = View.GONE
-        resultsContainer.visibility = View.GONE
-        resultIsoBisector.visibility = View.GONE
+        resultsContainer.visibility    = View.GONE
+        resultIsoBisector.visibility   = View.GONE
         resultRightBisector.visibility = View.GONE
-        btnReset.visibility = View.GONE
-        tvError.visibility = View.GONE
+        btnReset.visibility            = View.GONE
+        tvError.visibility             = View.GONE
 
         listOf(
             fieldRadius, fieldDiameter, fieldSquareSide, fieldSquareDiagonal,
